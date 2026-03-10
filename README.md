@@ -1,40 +1,60 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop (JVM).
+# 칸반 보드 태스크
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## 1단계 구현할 기능 목록
 
-### Build and Run Android Application
+### 1. TaskCard 추가 기능을 구현한다.
+- [X] 우측 하단의 추가 버튼을 클릭하면 입력 창이 열린다.
+- [X] 입력 창에서 다음 정보를 입력할 수 있다.
+  - 제목
+  - 내용
+  - 태그
+    - 태그 입력 후 엔터를 누르면 태그가 추가된다.
+    - 태그 길이가 5자 이하일 경우에만 추가된다.
+    - 태그는 최대 5개까지 입력할 수 있다.
+  - 작성자
+- [X] 확인 버튼을 누르면 TaskCard가 생성되어 목록에 추가된다.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+### 2. TaskCard 목록 표시 기능을 구현한다.
+- [X] TaskCard가 생성되면 목록이 갱신되어 화면에 표시된다.
+- [X] 제목이 한 줄을 초과하면 말줄임표(...)로 표시된다.
+- [X] 내용이 두 줄을 초과하면 말줄임표(...)로 표시된다.
+- [X] 작성자가 한 줄을 초과하면 말줄임표(...)로 표시된다.
 
-### Build and Run Desktop (JVM) Application
+## 수정 사항
+- [X] App.kt에서 `AddButton`, `TaskCardGroup` 분리
+- [X] TaskCard에서 `Title`, `Content`, `Tags`, `Profile` 분리
+- [X] 상태 관리 코드를 `rememberSaveable`와 상태 호이스팅을 사용하도록 변경
+- [X] 값을 리턴하는 컴포저블 함수를 값을 리턴하지 않고 부모에게 상태 변화를 알리도록 수정
+- [X] 동사형이었던 함수명, 변수명을 명사형으로 변경
+- [X] 분리한 각 컴포넌트에 `Preview` 추가
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+## 2단계 구현할 기능 목록
 
----
+### 1. 비즈니스 로직과 UI 로직을 분리한다.
+- [X] data, domain, ui로 패키지를 분리한다.
+- [X] data 계층에 `TasksData` 와 `TasksRepository` 를 생성하여 데이터를 저장하거나 가져오는 로직을 분리한다.
+- [X] ui 계층의 비즈니스 로직을 `HomeViewModel` 로 분리한다.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+### 2.  단위 테스트를 작성한다.
+- [X] 제목이 비어 있거나 공백만 있는 경우 생성이 불가능하다.
+- [X] 담당자가 비어 있거나 공백만 있는 경우 생성이 불가능하다.
+- [X] 태그 내용이 비어있는 경우 생성이 불가능하다.
+- [X] 태그의 길이가 5자를 초과할 경우 생성이 불가능하다.
+- [X] 태그가 5개를 초과할 경우 생성이 불가능하다.
+- [X] 추가 버튼, 입력창의 콜백 호출을 테스트한다.
+- [X] ViewModel 테스트 코드를 작성한다.
+
+### 3. UI 테스트를 작성한다.
+
+- [X] 모든 정보가 있는 경우
+  - 시나리오: 제목, 설명, 태그, 담당자가 모두 입력된 카드를 렌더링한다.
+  - 기대 결과: 모든 필드(제목, 설명, 태그 리스트, 담당자 이름)가 화면에 정상적으로 노출된다.
+- [X] 설명이 없는 경우
+  - 시나리오: 제목, 태그, 담당자가 입력된 카드를 렌더링한다.
+  - 기대 결과: 제목, 태그, 담당자가 화면에 정상적으로 노출된다.
+- [X] 태그가 없는 경우
+  - 시나리오: 제목, 설명, 담당자가 입력된 카드를 렌더링한다.
+  - 기대 결과: 제목, 설명, 담당자가 화면에 정상적으로 노출된다.
+- [X] 설명과 태그가 없는 경우
+  - 시나리오: 제목, 담당자가 입력된 카드를 렌더링한다.
+  - 기대 결과: 제목, 담당자가 화면에 정상적으로 노출된다.
