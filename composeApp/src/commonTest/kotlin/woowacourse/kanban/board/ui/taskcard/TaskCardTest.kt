@@ -1,11 +1,11 @@
-package woowacourse.kanban.board.ui.home.components
+package woowacourse.kanban.board.ui.taskcard
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
 import org.junit.Test
-import woowacourse.kanban.board.domain.entity.Tag
-import woowacourse.kanban.board.domain.entity.Task
+import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.Task
 
 @OptIn(ExperimentalTestApi::class)
 class TaskCardTest {

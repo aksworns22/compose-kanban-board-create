@@ -1,7 +1,7 @@
-package woowacourse.kanban.board.data.datasource
+package woowacourse.kanban.board.data
 
-import woowacourse.kanban.board.domain.entity.Tag
-import woowacourse.kanban.board.domain.entity.Task
+import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.Task
 
 val tasksData = listOf(
     Task(

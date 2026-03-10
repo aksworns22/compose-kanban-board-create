@@ -1,4 +1,4 @@
-package woowacourse.kanban.board.ui.home.components
+package woowacourse.kanban.board.ui.taskcard
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.sp
 import kanbanboard.composeapp.generated.resources.Res
 import kanbanboard.composeapp.generated.resources.profile_image
 import org.jetbrains.compose.resources.painterResource
-import woowacourse.kanban.board.data.datasource.tasksData
-import woowacourse.kanban.board.domain.entity.Tag
-import woowacourse.kanban.board.domain.entity.Task
+import woowacourse.kanban.board.data.tasksData
+import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.Task
 
 private class TaskCardPreviewParameterProvider : PreviewParameterProvider<Task> {
     override val values = tasksData.asSequence()
