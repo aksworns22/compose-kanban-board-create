@@ -23,6 +23,9 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
     var title by remember { mutableStateOf("") }
     var isTitleError by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
+    var tags by remember { mutableStateOf("") }
+    var isTagsError by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -42,6 +45,15 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .background(Color.White)
                 .heightIn(min = 144.dp),
+        )
+        TagsField(
+            tags = tags,
+            onValueChange = {
+                tags = it
+                isTagsError = !Task.isValidTags(tags.split(",").map { it.trim() })
+            },
+            isError = isTagsError,
+            modifier = Modifier.background(Color.White),
         )
     }
 
@@ -79,6 +91,26 @@ private fun ContentField(
             value = content,
             onValueChange = onValueChange,
             placeholder = { Text("태스크에 대한 자세한 설명을 입력하세요") }
+        )
+    }
+}
+
+@Composable
+private fun TagsField(
+    tags: String,
+    onValueChange: (String) -> Unit,
+    isError: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        Text("태그")
+        TextField(
+            modifier = modifier,
+            value = tags,
+            onValueChange = onValueChange,
+            isError = isError,
+            placeholder = { Text("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)") },
+            supportingText = { if (isError) Text("태그는 5자 이내로 5개까지만 등록할 수 있습니다.") }
         )
     }
 }

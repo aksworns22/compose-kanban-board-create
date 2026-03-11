@@ -7,5 +7,7 @@ data class Tag(val name: String) {
             require(name.length <= 5) { "태그의 길이는 5자 이하여야 합니다" }
             return Tag(name)
         }
+
+        fun isValid(value: String): Boolean = value.isNotBlank() && value.length <= 5
     }
 }
