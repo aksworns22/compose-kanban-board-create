@@ -7,5 +7,5 @@ import woowacourse.kanban.board.ui.taskcard.CreateTaskCardModal
 @Preview(showBackground = true)
 @Composable
 fun App() {
-    CreateTaskCardModal()
+    CreateTaskCardModal(authors = listOf("다이노", "페임스"))
 }

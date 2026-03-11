@@ -1,11 +1,14 @@
 package woowacourse.kanban.board.ui.taskcard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -22,7 +25,7 @@ import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
 
 @Composable
-fun CreateTaskCardModal(modifier: Modifier = Modifier) {
+fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
     var title by remember { mutableStateOf("") }
     var isTitleError by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
@@ -30,6 +33,7 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
     var isTagsError by remember { mutableStateOf(false) }
     var isTagFormatError by remember { mutableStateOf(false) }
     var taskState by remember { mutableStateOf(TaskState.TO_DO) }
+    var selectedAuthor by remember { mutableStateOf(authors.first()) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -71,6 +75,11 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
         TaskStateField(
             selectedState = taskState,
             onStateChanged = { newTaskState -> taskState = newTaskState }
+        )
+        AuthorField(
+            selectedAuthor = selectedAuthor,
+            onAuthorSelected = { newAuthor -> selectedAuthor = newAuthor },
+            authors = authors
         )
     }
 }
@@ -155,9 +164,25 @@ private fun TaskStateField(
     }
 }
 
+@Composable
+private fun AuthorField(
+    selectedAuthor: String,
+    onAuthorSelected: (String) -> Unit,
+    authors: List<String>
+) {
+    LazyRow {
+        items(authors.size) { author ->
+            Text(
+                text = authors[author],
+                color = if (selectedAuthor == authors[author]) Color.Red else Color.Black,
+                modifier = Modifier.clickable { onAuthorSelected(authors[author]) }
+            )
+        }
+    }
+}
 
 @Preview
 @Composable
 private fun PreviewCreateTaskCardModal() {
-    CreateTaskCardModal(modifier = Modifier.background(Color(0xFFE5E7EB)))
+    CreateTaskCardModal(authors = listOf("다이노", "페임스"), modifier = Modifier.background(Color(0xFFE5E7EB)))
 }
