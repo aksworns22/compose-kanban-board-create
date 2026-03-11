@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
     var isTagFormatError by remember { mutableStateOf(false) }
     var taskState by remember { mutableStateOf(TaskState.TO_DO) }
     var selectedAuthor by remember { mutableStateOf(authors.first()) }
+    val isNewTaskEnabled by remember { derivedStateOf { !isTitleError && !isTagsError && !isTagFormatError } }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -81,6 +83,12 @@ fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
             onAuthorSelected = { newAuthor -> selectedAuthor = newAuthor },
             authors = authors
         )
+        Button(
+            onClick = { isTitleError = !Task.isValidTitle(title) },
+            enabled = isNewTaskEnabled
+        ) {
+            Text(text = "생성")
+        }
     }
 }
 
