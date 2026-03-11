@@ -8,11 +8,13 @@ data class Task(
 ) {
     companion object {
         fun of(title: String, content: String, tagsInput: List<String>, author: String): Task {
-            require(title.isNotBlank()) { "제목을 입력해주세요" }
+            require(isValidTitle(title)) { "제목을 입력해주세요" }
             require(author.isNotBlank()) { "작성자를 입력해주세요" }
             require(tagsInput.size <= 5) { "태그는 최대 5개까지 입력할 수 있습니다" }
             val tags = tagsInput.map { Tag.from(it) }
             return Task(title, content, tags, author)
         }
+
+        fun isValidTitle(value: String): Boolean = value.isNotBlank()
     }
 }
