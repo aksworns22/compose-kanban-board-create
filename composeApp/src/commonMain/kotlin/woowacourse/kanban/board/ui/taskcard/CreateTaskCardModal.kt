@@ -25,6 +25,7 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
     var content by remember { mutableStateOf("") }
     var tags by remember { mutableStateOf("") }
     var isTagsError by remember { mutableStateOf(false) }
+    var isTagFormatError by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -50,9 +51,17 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
             tags = tags,
             onValueChange = {
                 tags = it
-                isTagsError = !Task.isValidTags(tags.split(",").map { it.trim() })
+                val splitTags = tags.split(",").map { tag -> tag.trim() }
+                if(tags.isEmpty()) {
+                    isTagFormatError = false
+                    isTagsError = false
+                } else {
+                    isTagFormatError = splitTags.any { tag -> tag.isEmpty() }
+                    isTagsError = !Task.isValidTags(splitTags)
+                }
             },
             isError = isTagsError,
+            isTagFormatError = isTagFormatError,
             modifier = Modifier.background(Color.White),
         )
     }
@@ -100,6 +109,7 @@ private fun TagsField(
     tags: String,
     onValueChange: (String) -> Unit,
     isError: Boolean,
+    isTagFormatError: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
@@ -110,7 +120,10 @@ private fun TagsField(
             onValueChange = onValueChange,
             isError = isError,
             placeholder = { Text("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)") },
-            supportingText = { if (isError) Text("태그는 5자 이내로 5개까지만 등록할 수 있습니다.") }
+            supportingText = {
+                if (isTagFormatError) Text("태그 형식이 올바르지 않습니다.")
+                else if (isError) Text("태그는 5자 이내로 5개까지만 등록할 수 있습니다.")
+            }
         )
     }
 }
