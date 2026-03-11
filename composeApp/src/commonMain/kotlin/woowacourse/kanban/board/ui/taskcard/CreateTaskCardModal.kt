@@ -3,8 +3,10 @@ package woowacourse.kanban.board.ui.taskcard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import woowacourse.kanban.board.domain.Task
+import woowacourse.kanban.board.domain.TaskState
 
 @Composable
 fun CreateTaskCardModal(modifier: Modifier = Modifier) {
@@ -26,6 +29,7 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
     var tags by remember { mutableStateOf("") }
     var isTagsError by remember { mutableStateOf(false) }
     var isTagFormatError by remember { mutableStateOf(false) }
+    var taskState by remember { mutableStateOf(TaskState.TO_DO) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -64,8 +68,11 @@ fun CreateTaskCardModal(modifier: Modifier = Modifier) {
             isTagFormatError = isTagFormatError,
             modifier = Modifier.background(Color.White),
         )
+        TaskStateField(
+            selectedState = taskState,
+            onStateChanged = { newTaskState -> taskState = newTaskState }
+        )
     }
-
 }
 
 @Composable
@@ -127,6 +134,27 @@ private fun TagsField(
         )
     }
 }
+@Composable
+private fun TaskStateField(
+    selectedState: TaskState,
+    onStateChanged: (TaskState) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier) {
+        Button(onClick = { onStateChanged(TaskState.TO_DO) }) {
+            Text("To Do", color = if (selectedState == TaskState.TO_DO) Color.Red else Color.Black)
+        }
+
+        Button(onClick = { onStateChanged(TaskState.IN_PROGRESS) }) {
+            Text("In Progress", color = if (selectedState == TaskState.IN_PROGRESS) Color.Red else Color.Black)
+        }
+
+        Button(onClick = { onStateChanged(TaskState.DONE) }) {
+            Text("Done", color = if (selectedState == TaskState.DONE) Color.Red else Color.Black)
+        }
+    }
+}
+
 
 @Preview
 @Composable
