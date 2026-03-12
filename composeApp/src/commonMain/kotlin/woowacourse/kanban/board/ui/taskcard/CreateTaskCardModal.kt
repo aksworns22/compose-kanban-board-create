@@ -164,6 +164,7 @@ private fun ContentInputField(content: String, onValueChange: (String) -> Unit) 
 
 @Composable
 private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError: Boolean, onValueChange: (String) -> Unit) {
+    val isError = isTagsError || isTagFormatError
     TextInputField(
         label = "태그",
         content = {
@@ -176,11 +177,11 @@ private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError:
                     .fillMaxWidth()
                     .border(
                         1.dp,
-                        if (isTagsError || isTagFormatError) Color(0xFFB3261E) else Color(0xFF79747E),
+                        if (isError) Color(0xFFB3261E) else Color(0xFF79747E),
                         RoundedCornerShape(8.dp),
                     ),
                 trailingIcon = {
-                    if (isTagsError || isTagFormatError) Icon(
+                    if (isError) Icon(
                         Icons.Default.Error,
                         tint = Color(0xFFB3261E),
                         contentDescription = "경고",
@@ -198,7 +199,7 @@ private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError:
                 },
                 fontWeight = FontWeight.W400,
                 fontSize = 12.sp,
-                color = if (isTagFormatError || isTagsError) Color(0xFFB3261E) else Color(0xFF45454F),
+                color = if (isError) Color(0xFFB3261E) else Color(0xFF45454F),
             )
         },
     )
@@ -232,7 +233,7 @@ private fun AuthorInputField(authors: List<String>, selectedAuthor: String, onAu
 }
 
 @Composable
-private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onClick: () -> Unit) {
+private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
@@ -249,7 +250,7 @@ private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onClick: () -> Un
         }
         Spacer(modifier = Modifier.width(12.dp))
         Button(
-            onClick = onClick,
+            onClick = onCreateClick,
             enabled = isNewTaskEnabled,
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
