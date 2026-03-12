@@ -1,27 +1,46 @@
 package woowacourse.kanban.board.ui.taskcard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
 
@@ -38,137 +57,225 @@ fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
     val isNewTaskEnabled by remember { derivedStateOf { !isTitleError && !isTagsError && !isTagFormatError } }
 
     Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        TitleField(
-            title = title,
-            onValueChange = {
-                title = it
-                isTitleError = !Task.isValidTitle(title)
+        CreateTaskHeader()
+        HorizontalDivider()
+        InputField(
+            label = "제목 *",
+            content = {
+                CustomTextField(
+                    value = title,
+                    onValueChange = {
+                        title = it
+                        isTitleError = !Task.isValidTitle(title)
+                    },
+                    placeholder = "태스크 제목을 입력하세요",
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, if (isTitleError) Color(0xFFB3261E) else Color(0xFF79747E), RoundedCornerShape(8.dp)),
+                    trailingIcon = { if (isTitleError) Icon(Icons.Default.Error, tint = Color(0xFFB3261E), contentDescription = "경고") },
+                )
             },
-            isError = isTitleError,
-            modifier = Modifier.background(Color.White),
-        )
-        ContentField(
-            content = content,
-            onValueChange = { content = it },
-            modifier = Modifier
-                .background(Color.White)
-                .heightIn(min = 144.dp),
-        )
-        TagsField(
-            tags = tags,
-            onValueChange = {
-                tags = it
-                val splitTags = tags.split(",").map { tag -> tag.trim() }
-                if(tags.isEmpty()) {
-                    isTagFormatError = false
-                    isTagsError = false
-                } else {
-                    isTagFormatError = splitTags.any { tag -> tag.isEmpty() }
-                    isTagsError = !Task.isValidTags(splitTags)
+            infoMessage = {
+                if (isTitleError) {
+                    Text(
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                        text = "제목을 입력해주세요.",
+                        fontWeight = FontWeight.W400,
+                        fontSize = 12.sp,
+                        color = Color(0xFFB3261E),
+                    )
                 }
+
             },
-            isError = isTagsError,
-            isTagFormatError = isTagFormatError,
-            modifier = Modifier.background(Color.White),
         )
-        TaskStateField(
-            selectedState = taskState,
-            onStateChanged = { newTaskState -> taskState = newTaskState }
+        InputField(
+            label = "설명",
+            content = {
+                CustomTextField(
+                    value = content,
+                    onValueChange = { content = it },
+                    placeholder = "태스크에 대한 자세한 설명을 입력하세요",
+                    singleLine = false,
+                    modifier = Modifier.heightIn(min = 144.dp),
+                )
+            },
         )
-        AuthorField(
-            selectedAuthor = selectedAuthor,
-            onAuthorSelected = { newAuthor -> selectedAuthor = newAuthor },
-            authors = authors
+        InputField(
+            label = "태그",
+            content = {
+                CustomTextField(
+                    value = tags,
+                    onValueChange = {
+                        tags = it
+                        val splitTags = tags.split(",").map { tag -> tag.trim() }
+                        if (tags.isEmpty()) {
+                            isTagFormatError = false
+                            isTagsError = false
+                        } else {
+                            isTagFormatError = splitTags.any { tag -> tag.isEmpty() }
+                            isTagsError = !Task.isValidTags(splitTags)
+                        }
+                    },
+                    placeholder = "태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)",
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            if (isTagsError || isTagFormatError) Color(0xFFB3261E) else Color(0xFF79747E),
+                            RoundedCornerShape(8.dp),
+                        ),
+                    trailingIcon = {
+                        if (isTagsError || isTagFormatError) Icon(
+                            Icons.Default.Error,
+                            tint = Color(0xFFB3261E),
+                            contentDescription = "경고",
+                        )
+                    },
+                )
+            },
+            infoMessage = {
+                Text(
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                    text = when {
+                        isTagFormatError -> "태그 형식이 올바르지 않습니다."
+                        isTagsError -> "태그는 5자 이내로 5개까지만 등록할 수 있습니다."
+                        else -> "5자 이내의 태그를 최대 5개까지 등록할 수 있습니다."
+                    },
+                    fontWeight = FontWeight.W400,
+                    fontSize = 12.sp,
+                    color = if (isTagFormatError || isTagsError) Color(0xFFB3261E) else Color(0xFF45454F),
+                )
+            },
         )
-        Button(
-            onClick = { isTitleError = !Task.isValidTitle(title) },
-            enabled = isNewTaskEnabled
+        InputField(
+            label = "상태 *",
+            content = {
+                TaskStateField(
+                    selectedState = taskState,
+                    onStateChanged = { newTaskState -> taskState = newTaskState },
+                )
+            },
+        )
+        InputField(
+            label = "담당자 *",
+            content = {
+                AuthorField(
+                    selectedAuthor = selectedAuthor,
+                    onAuthorSelected = { newAuthor -> selectedAuthor = newAuthor },
+                    authors = authors,
+                )
+            },
+        )
+        HorizontalDivider()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "생성")
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color(0xFF364153),
+                ),
+            ) {
+                Text(text = "취소", textAlign = TextAlign.Center)
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Button(
+                onClick = { isTitleError = !Task.isValidTitle(title) },
+                enabled = isNewTaskEnabled,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF4F39F6),
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFFA7A4BC),
+                    disabledContentColor = Color.White,
+                ),
+            ) {
+                Text(text = "생성", textAlign = TextAlign.Center)
+            }
         }
     }
 }
 
 @Composable
-private fun TitleField(
-    title: String,
-    onValueChange: (String) -> Unit,
-    isError: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        Text("제목 *")
-        TextField(
-            value = title,
-            onValueChange = onValueChange,
-            placeholder = { Text("태스크 제목을 입력하세요") },
-            isError = isError,
-            supportingText = { if (isError) Text("제목을 입력해주세요.") },
+private fun CreateTaskHeader() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "새 태스크 생성",
+            fontSize = 20.sp,
+            color = Color(0xFF101828),
+            fontWeight = FontWeight.W600,
+        )
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = null,
         )
     }
 }
 
-@Composable
-private fun ContentField(
-    content: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        Text("설명")
-        TextField(
-            modifier = modifier,
-            value = content,
-            onValueChange = onValueChange,
-            placeholder = { Text("태스크에 대한 자세한 설명을 입력하세요") }
-        )
-    }
+private fun TaskState.toText(): String = when (this) {
+    TaskState.TO_DO -> "To Do"
+    TaskState.IN_PROGRESS -> "In Progress"
+    TaskState.DONE -> "Done"
 }
 
-@Composable
-private fun TagsField(
-    tags: String,
-    onValueChange: (String) -> Unit,
-    isError: Boolean,
-    isTagFormatError: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        Text("태그")
-        TextField(
-            modifier = modifier,
-            value = tags,
-            onValueChange = onValueChange,
-            isError = isError,
-            placeholder = { Text("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)") },
-            supportingText = {
-                if (isTagFormatError) Text("태그 형식이 올바르지 않습니다.")
-                else if (isError) Text("태그는 5자 이내로 5개까지만 등록할 수 있습니다.")
-            }
-        )
-    }
-}
 @Composable
 private fun TaskStateField(
     selectedState: TaskState,
     onStateChanged: (TaskState) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier) {
-        Button(onClick = { onStateChanged(TaskState.TO_DO) }) {
-            Text("To Do", color = if (selectedState == TaskState.TO_DO) Color.Red else Color.Black)
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        items(TaskState.entries.size) {
+            CustomButton(
+                modifier = Modifier
+                    .border(
+                        2.dp,
+                        if (selectedState == TaskState.entries[it]) Color(0xFF1447E6) else Color(0xFFE5E7EB),
+                        RoundedCornerShape(8.dp),
+                    )
+                    .background(if (selectedState == TaskState.entries[it]) Color(0xFFEFF6FF) else Color.White),
+                onClick = { onStateChanged(TaskState.entries[it]) },
+                content = {
+                    Text(
+                        text = TaskState.entries[it].toText(),
+                        color = if (selectedState == TaskState.entries[it]) Color(0xFF1447E6) else Color.Black,
+                        modifier = Modifier.width(200.dp).padding(vertical = 16.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                },
+            )
         }
+    }
+}
 
-        Button(onClick = { onStateChanged(TaskState.IN_PROGRESS) }) {
-            Text("In Progress", color = if (selectedState == TaskState.IN_PROGRESS) Color.Red else Color.Black)
-        }
-
-        Button(onClick = { onStateChanged(TaskState.DONE) }) {
-            Text("Done", color = if (selectedState == TaskState.DONE) Color.Red else Color.Black)
-        }
+@Composable
+private fun CustomButton(
+    content: @Composable () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+        ) { onClick() },
+    ) {
+        content()
     }
 }
 
@@ -176,21 +283,107 @@ private fun TaskStateField(
 private fun AuthorField(
     selectedAuthor: String,
     onAuthorSelected: (String) -> Unit,
-    authors: List<String>
+    authors: List<String>,
+    modifier: Modifier = Modifier,
 ) {
-    LazyRow {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         items(authors.size) { author ->
-            Text(
-                text = authors[author],
-                color = if (selectedAuthor == authors[author]) Color.Red else Color.Black,
-                modifier = Modifier.clickable { onAuthorSelected(authors[author]) }
+            CustomButton(
+                modifier = Modifier.width(200.dp)
+                    .border(2.dp, if (selectedAuthor == authors[author]) Color(0xFF615FFF) else Color(0xFFE5E7EB), RoundedCornerShape(8.dp))
+                    .background(if (selectedAuthor == authors[author]) Color(0xFFEEF2FF) else Color.White),
+                onClick = { onAuthorSelected(authors[author]) },
+                content = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                            imageVector = Icons.Default.AccountCircle,
+                            tint = Color(0xFF838383),
+                            contentDescription = "기본 프로필 이미지",
+                        )
+                        Text(
+                            text = authors[author],
+                            color = Color(0xFF101828),
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                },
             )
         }
     }
 }
 
-@Preview
+@Composable
+private fun InputField(
+    label: String,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    infoMessage: (@Composable () -> Unit)? = null,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        Text(
+            text = label,
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp,
+            color = Color(0xFF364153),
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        content()
+        infoMessage?.invoke()
+    }
+}
+
+@Composable
+private fun CustomTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    singleLine: Boolean,
+    modifier: Modifier = Modifier,
+    trailingIcon: @Composable (() -> Unit)? = null,
+) {
+    TextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(1.dp, Color(0xFF79747E), RoundedCornerShape(8.dp)),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = {
+            Text(
+                text = placeholder,
+                color = Color(0xFFAAAAAA),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W400,
+            )
+        },
+        singleLine = singleLine,
+        trailingIcon = trailingIcon,
+    )
+}
+
+@Preview(
+    widthDp = 672,
+)
 @Composable
 private fun PreviewCreateTaskCardModal() {
-    CreateTaskCardModal(authors = listOf("다이노", "페임스"), modifier = Modifier.background(Color(0xFFE5E7EB)))
+    CreateTaskCardModal(
+        authors = listOf("다이노", "페임스"),
+        modifier = Modifier
+            .background(Color.White).padding(16.dp),
+    )
 }
