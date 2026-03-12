@@ -59,4 +59,15 @@ class CreateTaskCardModalTest {
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("hello,")
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
     }
+
+    @Test
+    fun `쉼표가 연달아 나오면 형식 에러가 노출된다`() = runComposeUiTest {
+        setContent {
+            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+        }
+
+        onNodeWithText("태그 형식이 올바르지 않습니다.").assertDoesNotExist()
+        onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("hello,,hi")
+        onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
+    }
 }
