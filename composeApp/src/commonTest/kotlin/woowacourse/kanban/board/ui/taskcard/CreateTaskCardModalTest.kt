@@ -119,4 +119,15 @@ class CreateTaskCardModalTest {
         onNodeWithText("In Progress").assertIsNotSelected()
         onNodeWithText("Done").assertIsSelected()
     }
+
+    @Test
+    fun `담당자는 첫 번째 요소가 기본으로 선택된다`() = runComposeUiTest {
+        val authors = listOf("다이노", "페임스")
+
+        setContent {
+            CreateTaskCardModal(authors = authors)
+        }
+
+        onNodeWithText(authors.first()).assertIsSelected()
+    }
 }

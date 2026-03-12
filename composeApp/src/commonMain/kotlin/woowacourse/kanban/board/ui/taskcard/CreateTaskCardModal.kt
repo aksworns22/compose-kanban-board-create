@@ -298,7 +298,8 @@ private fun AuthorField(
             CustomButton(
                 modifier = Modifier.width(200.dp)
                     .border(2.dp, if (selectedAuthor == authors[author]) Color(0xFF615FFF) else Color(0xFFE5E7EB), RoundedCornerShape(8.dp))
-                    .background(if (selectedAuthor == authors[author]) Color(0xFFEEF2FF) else Color.White),
+                    .background(if (selectedAuthor == authors[author]) Color(0xFFEEF2FF) else Color.White)
+                    .semantics { selected = selectedAuthor == authors[author] },
                 onClick = { onAuthorSelected(authors[author]) },
                 content = {
                     Row(
