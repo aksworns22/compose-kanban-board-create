@@ -80,4 +80,15 @@ class CreateTaskCardModalTest {
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("123456")
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertExists()
     }
+
+    @Test
+    fun `태그가 5개를 초과하면 태그 규칙 위반 에러가 노출된다`() = runComposeUiTest {
+        setContent {
+            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+        }
+
+        onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertDoesNotExist()
+        onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("1, 2, 3, 4, 5, 6")
+        onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertExists()
+    }
 }
