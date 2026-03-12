@@ -118,7 +118,7 @@ private fun CreateTaskHeader() {
 
 @Composable
 private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange: (String) -> Unit) {
-    TextInputField(
+    CustomInputField(
         label = "제목 *",
         content = {
             CustomTextField(
@@ -148,7 +148,7 @@ private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange:
 
 @Composable
 private fun ContentInputField(content: String, onValueChange: (String) -> Unit) {
-    TextInputField(
+    CustomInputField(
         label = "설명",
         content = {
             CustomTextField(
@@ -165,7 +165,7 @@ private fun ContentInputField(content: String, onValueChange: (String) -> Unit) 
 @Composable
 private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError: Boolean, onValueChange: (String) -> Unit) {
     val isError = isTagsError || isTagFormatError
-    TextInputField(
+    CustomInputField(
         label = "태그",
         content = {
             CustomTextField(
@@ -207,7 +207,7 @@ private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError:
 
 @Composable
 private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskState) -> Unit) {
-    TextInputField(
+    CustomInputField(
         label = "상태 *",
         content = {
             TaskStateSelectField(
@@ -220,7 +220,7 @@ private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskS
 
 @Composable
 private fun AuthorInputField(authors: List<String>, selectedAuthor: String, onAuthorSelected: (String) -> Unit) {
-    TextInputField(
+    CustomInputField(
         label = "담당자 *",
         content = {
             AuthorSelectField(
@@ -364,7 +364,7 @@ private fun AuthorSelectField(
 }
 
 @Composable
-private fun TextInputField(
+private fun CustomInputField(
     label: String,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
