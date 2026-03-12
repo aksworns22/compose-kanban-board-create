@@ -1,6 +1,7 @@
 package woowacourse.kanban.board.ui.taskcard
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
@@ -145,5 +146,18 @@ class CreateTaskCardModalTest {
         //then
         onNodeWithText(authors.first()).assertIsNotSelected()
         onNodeWithText(authors.last()).assertIsSelected()
+    }
+
+    @Test
+    fun `제목과 태그가 규칙에 맞게 입력되면 생성 버튼을 누를 수 있다`() = runComposeUiTest {
+        setContent {
+            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+        }
+        onNodeWithText("생성").performClick() // 초기 화면은 항상 생성 버튼이 활성회되기 때문에 비활성화 처리를 위해 수행
+
+        onNodeWithText("생성").assertIsNotEnabled()
+        onNodeWithText("태스크 제목을 입력하세요").performTextInput("제목")
+        onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("   \n태그의 \t,  앞뒤공백은   , 무시  , 됩니다  ")
+        onNodeWithText("생성").assertIsEnabled()
     }
 }
