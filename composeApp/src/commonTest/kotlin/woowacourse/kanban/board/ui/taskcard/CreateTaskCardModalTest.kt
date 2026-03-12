@@ -130,4 +130,20 @@ class CreateTaskCardModalTest {
 
         onNodeWithText(authors.first()).assertIsSelected()
     }
+
+    @Test
+    fun `담당자는 한 항목만 선택 가능하다`() = runComposeUiTest {
+        val authors = listOf("다이노", "페임스")
+
+        setContent {
+            CreateTaskCardModal(authors = authors)
+        }
+
+        onNodeWithText(authors.first()).performClick()
+        onNodeWithText(authors.last()).performClick()
+
+        //then
+        onNodeWithText(authors.first()).assertIsNotSelected()
+        onNodeWithText(authors.last()).assertIsSelected()
+    }
 }
