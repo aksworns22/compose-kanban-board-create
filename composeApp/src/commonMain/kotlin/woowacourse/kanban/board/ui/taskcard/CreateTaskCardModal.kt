@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -36,6 +37,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -248,7 +251,8 @@ private fun TaskStateField(
                         if (selectedState == TaskState.entries[it]) Color(0xFF1447E6) else Color(0xFFE5E7EB),
                         RoundedCornerShape(8.dp),
                     )
-                    .background(if (selectedState == TaskState.entries[it]) Color(0xFFEFF6FF) else Color.White),
+                    .background(if (selectedState == TaskState.entries[it]) Color(0xFFEFF6FF) else Color.White)
+                    .semantics { selected = selectedState == TaskState.entries[it] },
                 onClick = { onStateChanged(TaskState.entries[it]) },
                 content = {
                     Text(

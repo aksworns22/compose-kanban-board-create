@@ -2,7 +2,10 @@ package woowacourse.kanban.board.ui.taskcard
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
@@ -90,5 +93,14 @@ class CreateTaskCardModalTest {
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertDoesNotExist()
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("1, 2, 3, 4, 5, 6")
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertExists()
+    }
+
+    @Test
+    fun `태스크 상태로 첫 번째 요소가 기본으로 선택된다`() = runComposeUiTest {
+        setContent {
+            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+        }
+
+        onNodeWithText("To Do").assertIsSelected()
     }
 }
