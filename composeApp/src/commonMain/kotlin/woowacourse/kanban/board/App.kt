@@ -18,6 +18,6 @@ fun App() {
         modifier = Modifier
             .width(672.dp)
             .background(Color.White)
-            .padding(16.dp)
+            .padding(16.dp),
     )
 }

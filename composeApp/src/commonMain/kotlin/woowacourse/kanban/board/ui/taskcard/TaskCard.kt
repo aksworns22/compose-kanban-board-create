@@ -41,19 +41,17 @@ private class TaskCardPreviewParameterProvider : PreviewParameterProvider<Task> 
 
 @Composable
 @Preview(showBackground = true)
-fun TaskCard(
-    @PreviewParameter(TaskCardPreviewParameterProvider::class) task: Task
-) {
+fun TaskCard(@PreviewParameter(TaskCardPreviewParameterProvider::class) task: Task) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
         border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
-        modifier = Modifier.width(286.dp)
+        modifier = Modifier.width(286.dp),
     ) {
         Column(
             modifier = Modifier.padding(17.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Title(title = task.title)
             if (task.content.isNotEmpty()) Content(content = task.content)
@@ -72,7 +70,7 @@ fun Title(title: String) {
         color = Color(0xFF101828),
         fontSize = 16.sp,
         maxLines = 1,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
@@ -84,7 +82,7 @@ fun Content(content: String) {
         color = Color(0xFF4A5565),
         fontSize = 14.sp,
         maxLines = 2,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
@@ -92,7 +90,7 @@ fun Content(content: String) {
 fun Tags(tags: List<Tag>) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         tags.forEach { tag ->
             Box(
@@ -106,7 +104,7 @@ fun Tags(tags: List<Tag>) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color(0xFF364153),
                     fontSize = 12.sp,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
                 )
             }
         }
@@ -119,7 +117,7 @@ fun Profile(author: String) {
         Image(
             painter = painterResource(Res.drawable.profile_image),
             contentDescription = "Profile Image",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
         Spacer(modifier = Modifier.width(2.dp))
         Text(
@@ -128,7 +126,7 @@ fun Profile(author: String) {
             color = Color(0xFF364153),
             fontSize = 14.sp,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

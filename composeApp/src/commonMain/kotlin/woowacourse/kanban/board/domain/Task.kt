@@ -5,7 +5,7 @@ data class Task(
     val content: String = "",
     val tags: List<Tag> = listOf(),
     val taskState: TaskState = TaskState.TO_DO,
-    val author: String
+    val author: String,
 ) {
     companion object {
         fun of(title: String, content: String, tagsInput: List<String>, author: String): Task {
@@ -18,8 +18,7 @@ data class Task(
 
         fun isValidTitle(value: String): Boolean = value.isNotBlank()
 
-        fun isValidTags(tags: List<String>): Boolean =
-            tags.all { Tag.isValid(it) } && isValidTagCount(tags)
+        fun isValidTags(tags: List<String>): Boolean = tags.all { Tag.isValid(it) } && isValidTagCount(tags)
 
         private fun isValidTagCount(tags: List<String>): Boolean = tags.size <= 5
     }

@@ -115,7 +115,6 @@ private fun CreateTaskHeader() {
     }
 }
 
-
 @Composable
 private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange: (String) -> Unit) {
     LabeledField(
@@ -265,7 +264,6 @@ private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: ()
     }
 }
 
-
 private fun TaskState.toText(): String = when (this) {
     TaskState.TO_DO -> "To Do"
     TaskState.IN_PROGRESS -> "In Progress"
@@ -273,11 +271,7 @@ private fun TaskState.toText(): String = when (this) {
 }
 
 @Composable
-private fun TaskStateSelectField(
-    selectedState: TaskState,
-    onStateChanged: (TaskState) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (TaskState) -> Unit, modifier: Modifier = Modifier) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -307,11 +301,7 @@ private fun TaskStateSelectField(
 }
 
 @Composable
-private fun CustomButton(
-    content: @Composable () -> Unit,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun CustomButton(content: @Composable () -> Unit, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.clickable(
             interactionSource = remember { MutableInteractionSource() },

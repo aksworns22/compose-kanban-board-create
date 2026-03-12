@@ -11,7 +11,7 @@ import woowacourse.kanban.board.domain.Task
 @Composable
 fun TaskCards(tasks: List<Task>) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(tasks.size) { item ->
             TaskCard(task = tasks[item])

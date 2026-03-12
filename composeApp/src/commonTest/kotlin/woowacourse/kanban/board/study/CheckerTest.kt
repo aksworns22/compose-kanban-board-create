@@ -1,3 +1,5 @@
+@file:Suppress("ktlint")
+
 package woowacourse.kanban.board.study
 
 import androidx.compose.runtime.getValue
