@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -55,7 +54,7 @@ fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
     var tags by remember { mutableStateOf("") }
     var isTagsError by remember { mutableStateOf(false) }
     var isTagFormatError by remember { mutableStateOf(false) }
-    var taskState by remember { mutableStateOf(TaskState.TO_DO) }
+    var selectedState by remember { mutableStateOf(TaskState.TO_DO) }
     var selectedAuthor by remember { mutableStateOf(authors.first()) }
     val isNewTaskEnabled by remember { derivedStateOf { !isTitleError && !isTagsError && !isTagFormatError } }
 
@@ -65,144 +64,33 @@ fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
     ) {
         CreateTaskHeader()
         HorizontalDivider()
-        InputField(
-            label = "제목 *",
-            content = {
-                CustomTextField(
-                    value = title,
-                    onValueChange = {
-                        title = it
-                        isTitleError = !Task.isValidTitle(title)
-                    },
-                    placeholder = "태스크 제목을 입력하세요",
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, if (isTitleError) Color(0xFFB3261E) else Color(0xFF79747E), RoundedCornerShape(8.dp)),
-                    trailingIcon = { if (isTitleError) Icon(Icons.Default.Error, tint = Color(0xFFB3261E), contentDescription = "경고") },
-                )
-            },
-            infoMessage = {
-                if (isTitleError) {
-                    Text(
-                        modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                        text = "제목을 입력해주세요.",
-                        fontWeight = FontWeight.W400,
-                        fontSize = 12.sp,
-                        color = Color(0xFFB3261E),
-                    )
-                }
+        TitleInputField(title, isTitleError) {
+            title = it
+            isTitleError = !Task.isValidTitle(it)
+        }
+        ContentInputField(content) { content = it }
+        TagsInputField(tags, isTagsError, isTagFormatError) {
+            tags = it
+            val splitTags = tags.split(",").map { tag -> tag.trim() }
+            if (tags.isEmpty()) {
+                isTagFormatError = false
+                isTagsError = false
+            } else {
+                isTagFormatError = splitTags.any { tag -> tag.isEmpty() }
+                isTagsError = !Task.isValidTags(splitTags)
+            }
+        }
+        TaskStateInputField(selectedState) { newTaskState ->
+            selectedState = newTaskState
+        }
+        AuthorInputField(authors, selectedAuthor) { newAuthor ->
+            selectedAuthor = newAuthor
+        }
 
-            },
-        )
-        InputField(
-            label = "설명",
-            content = {
-                CustomTextField(
-                    value = content,
-                    onValueChange = { content = it },
-                    placeholder = "태스크에 대한 자세한 설명을 입력하세요",
-                    singleLine = false,
-                    modifier = Modifier.heightIn(min = 144.dp),
-                )
-            },
-        )
-        InputField(
-            label = "태그",
-            content = {
-                CustomTextField(
-                    value = tags,
-                    onValueChange = {
-                        tags = it
-                        val splitTags = tags.split(",").map { tag -> tag.trim() }
-                        if (tags.isEmpty()) {
-                            isTagFormatError = false
-                            isTagsError = false
-                        } else {
-                            isTagFormatError = splitTags.any { tag -> tag.isEmpty() }
-                            isTagsError = !Task.isValidTags(splitTags)
-                        }
-                    },
-                    placeholder = "태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)",
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            1.dp,
-                            if (isTagsError || isTagFormatError) Color(0xFFB3261E) else Color(0xFF79747E),
-                            RoundedCornerShape(8.dp),
-                        ),
-                    trailingIcon = {
-                        if (isTagsError || isTagFormatError) Icon(
-                            Icons.Default.Error,
-                            tint = Color(0xFFB3261E),
-                            contentDescription = "경고",
-                        )
-                    },
-                )
-            },
-            infoMessage = {
-                Text(
-                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                    text = when {
-                        isTagFormatError -> "태그 형식이 올바르지 않습니다."
-                        isTagsError -> "태그는 5자 이내로 5개까지만 등록할 수 있습니다."
-                        else -> "5자 이내의 태그를 최대 5개까지 등록할 수 있습니다."
-                    },
-                    fontWeight = FontWeight.W400,
-                    fontSize = 12.sp,
-                    color = if (isTagFormatError || isTagsError) Color(0xFFB3261E) else Color(0xFF45454F),
-                )
-            },
-        )
-        InputField(
-            label = "상태 *",
-            content = {
-                TaskStateField(
-                    selectedState = taskState,
-                    onStateChanged = { newTaskState -> taskState = newTaskState },
-                )
-            },
-        )
-        InputField(
-            label = "담당자 *",
-            content = {
-                AuthorField(
-                    selectedAuthor = selectedAuthor,
-                    onAuthorSelected = { newAuthor -> selectedAuthor = newAuthor },
-                    authors = authors,
-                )
-            },
-        )
         HorizontalDivider()
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color(0xFF364153),
-                ),
-            ) {
-                Text(text = "취소", textAlign = TextAlign.Center)
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Button(
-                onClick = { isTitleError = !Task.isValidTitle(title) },
-                enabled = isNewTaskEnabled,
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4F39F6),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFFA7A4BC),
-                    disabledContentColor = Color.White,
-                ),
-            ) {
-                Text(text = "생성", textAlign = TextAlign.Center)
-            }
+
+        CreateTaskActionButtons(isNewTaskEnabled) {
+            isTitleError = !Task.isValidTitle(title)
         }
     }
 }
@@ -227,6 +115,156 @@ private fun CreateTaskHeader() {
     }
 }
 
+
+@Composable
+private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange: (String) -> Unit) {
+    TextInputField(
+        label = "제목 *",
+        content = {
+            CustomTextField(
+                value = title,
+                onValueChange = onValueChange,
+                placeholder = "태스크 제목을 입력하세요",
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, if (isTitleError) Color(0xFFB3261E) else Color(0xFF79747E), RoundedCornerShape(8.dp)),
+                trailingIcon = { if (isTitleError) Icon(Icons.Default.Error, tint = Color(0xFFB3261E), contentDescription = "경고") },
+            )
+        },
+        infoContent = {
+            if (isTitleError) {
+                Text(
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                    text = "제목을 입력해주세요.",
+                    fontWeight = FontWeight.W400,
+                    fontSize = 12.sp,
+                    color = Color(0xFFB3261E),
+                )
+            }
+        },
+    )
+}
+
+@Composable
+private fun ContentInputField(content: String, onValueChange: (String) -> Unit) {
+    TextInputField(
+        label = "설명",
+        content = {
+            CustomTextField(
+                value = content,
+                onValueChange = onValueChange,
+                placeholder = "태스크에 대한 자세한 설명을 입력하세요",
+                singleLine = false,
+                modifier = Modifier.heightIn(min = 144.dp),
+            )
+        },
+    )
+}
+
+@Composable
+private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError: Boolean, onValueChange: (String) -> Unit) {
+    TextInputField(
+        label = "태그",
+        content = {
+            CustomTextField(
+                value = tags,
+                onValueChange = onValueChange,
+                placeholder = "태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)",
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        1.dp,
+                        if (isTagsError || isTagFormatError) Color(0xFFB3261E) else Color(0xFF79747E),
+                        RoundedCornerShape(8.dp),
+                    ),
+                trailingIcon = {
+                    if (isTagsError || isTagFormatError) Icon(
+                        Icons.Default.Error,
+                        tint = Color(0xFFB3261E),
+                        contentDescription = "경고",
+                    )
+                },
+            )
+        },
+        infoContent = {
+            Text(
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                text = when {
+                    isTagFormatError -> "태그 형식이 올바르지 않습니다."
+                    isTagsError -> "태그는 5자 이내로 5개까지만 등록할 수 있습니다."
+                    else -> "5자 이내의 태그를 최대 5개까지 등록할 수 있습니다."
+                },
+                fontWeight = FontWeight.W400,
+                fontSize = 12.sp,
+                color = if (isTagFormatError || isTagsError) Color(0xFFB3261E) else Color(0xFF45454F),
+            )
+        },
+    )
+}
+
+@Composable
+private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskState) -> Unit) {
+    TextInputField(
+        label = "상태 *",
+        content = {
+            TaskStateSelectField(
+                selectedState = selectedState,
+                onStateChanged = onStateChanged,
+            )
+        },
+    )
+}
+
+@Composable
+private fun AuthorInputField(authors: List<String>, selectedAuthor: String, onAuthorSelected: (String) -> Unit) {
+    TextInputField(
+        label = "담당자 *",
+        content = {
+            AuthorSelectField(
+                selectedAuthor = selectedAuthor,
+                onAuthorSelected = onAuthorSelected,
+                authors = authors,
+            )
+        },
+    )
+}
+
+@Composable
+private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Button(
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color(0xFF364153),
+            ),
+        ) {
+            Text(text = "취소", textAlign = TextAlign.Center)
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Button(
+            onClick = onClick,
+            enabled = isNewTaskEnabled,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF4F39F6),
+                contentColor = Color.White,
+                disabledContainerColor = Color(0xFFA7A4BC),
+                disabledContentColor = Color.White,
+            ),
+        ) {
+            Text(text = "생성", textAlign = TextAlign.Center)
+        }
+    }
+}
+
+
 private fun TaskState.toText(): String = when (this) {
     TaskState.TO_DO -> "To Do"
     TaskState.IN_PROGRESS -> "In Progress"
@@ -234,7 +272,7 @@ private fun TaskState.toText(): String = when (this) {
 }
 
 @Composable
-private fun TaskStateField(
+private fun TaskStateSelectField(
     selectedState: TaskState,
     onStateChanged: (TaskState) -> Unit,
     modifier: Modifier = Modifier,
@@ -284,7 +322,7 @@ private fun CustomButton(
 }
 
 @Composable
-private fun AuthorField(
+private fun AuthorSelectField(
     selectedAuthor: String,
     onAuthorSelected: (String) -> Unit,
     authors: List<String>,
@@ -325,11 +363,11 @@ private fun AuthorField(
 }
 
 @Composable
-private fun InputField(
+private fun TextInputField(
     label: String,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    infoMessage: (@Composable () -> Unit)? = null,
+    infoContent: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = modifier,
@@ -342,7 +380,7 @@ private fun InputField(
         )
         Spacer(modifier = Modifier.height(10.dp))
         content()
-        infoMessage?.invoke()
+        infoContent?.invoke()
     }
 }
 
