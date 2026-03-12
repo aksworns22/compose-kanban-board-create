@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
 
@@ -42,58 +41,68 @@ class CreateTaskCardModalTest {
     }
 
     @Test
-    fun `태그가 쉼표로 시작하면 형식 에러가 노출된다`() = runComposeUiTest {
+    fun `태그가 쉼표로 시작하면 형식 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
             CreateTaskCardModal(authors = listOf("다이노", "페임스"))
         }
+        onNodeWithText("생성").assertIsEnabled()
 
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertDoesNotExist()
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput(",hello")
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
+        onNodeWithText("생성").assertIsNotEnabled()
     }
 
     @Test
-    fun `태그가 쉼표로 끝나면 형식 에러가 노출된다`() = runComposeUiTest {
+    fun `태그가 쉼표로 끝나면 형식 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
             CreateTaskCardModal(authors = listOf("다이노", "페임스"))
         }
+        onNodeWithText("생성").assertIsEnabled()
 
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertDoesNotExist()
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("hello,")
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
+        onNodeWithText("생성").assertIsNotEnabled()
     }
 
     @Test
-    fun `쉼표가 연달아 나오면 형식 에러가 노출된다`() = runComposeUiTest {
+    fun `쉼표가 연달아 나오면 형식 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
             CreateTaskCardModal(authors = listOf("다이노", "페임스"))
         }
+        onNodeWithText("생성").assertIsEnabled()
 
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertDoesNotExist()
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("hello,,hi")
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
+        onNodeWithText("생성").assertIsNotEnabled()
     }
 
     @Test
-    fun `태그가 5자 이내가 아니라면 태그 규칙 위반 에러가 노출된다`() = runComposeUiTest {
+    fun `태그가 5자 이내가 아니라면 태그 규칙 위반 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
             CreateTaskCardModal(authors = listOf("다이노", "페임스"))
         }
+        onNodeWithText("생성").assertIsEnabled()
 
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertDoesNotExist()
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("123456")
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertExists()
+        onNodeWithText("생성").assertIsNotEnabled()
     }
 
     @Test
-    fun `태그가 5개를 초과하면 태그 규칙 위반 에러가 노출된다`() = runComposeUiTest {
+    fun `태그가 5개를 초과하면 태그 규칙 위반 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
             CreateTaskCardModal(authors = listOf("다이노", "페임스"))
         }
+        onNodeWithText("생성").assertIsEnabled()
 
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertDoesNotExist()
         onNodeWithText("태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)").performTextInput("1, 2, 3, 4, 5, 6")
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertExists()
+        onNodeWithText("생성").assertIsNotEnabled()
     }
 
     @Test
