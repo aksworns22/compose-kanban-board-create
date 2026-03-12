@@ -103,4 +103,20 @@ class CreateTaskCardModalTest {
 
         onNodeWithText("To Do").assertIsSelected()
     }
+
+    @Test
+    fun `태스크 상태는 한 항목만 선택 가능하다`() = runComposeUiTest {
+        //when
+        setContent {
+            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+        }
+        onNodeWithText("To Do").performClick()
+        onNodeWithText("In Progress").performClick()
+        onNodeWithText("Done").performClick()
+
+        //then
+        onNodeWithText("To Do").assertIsNotSelected()
+        onNodeWithText("In Progress").assertIsNotSelected()
+        onNodeWithText("Done").assertIsSelected()
+    }
 }
