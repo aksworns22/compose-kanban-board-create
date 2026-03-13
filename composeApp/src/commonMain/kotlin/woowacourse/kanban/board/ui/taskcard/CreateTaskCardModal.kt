@@ -264,7 +264,7 @@ private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: ()
     }
 }
 
-private fun TaskState.toText(): String = when (this) {
+private fun TaskState.toDisplayName(): String = when (this) {
     TaskState.TO_DO -> "To Do"
     TaskState.IN_PROGRESS -> "In Progress"
     TaskState.DONE -> "Done"
@@ -289,7 +289,7 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
                 onClick = { onStateChanged(TaskState.entries[it]) },
                 content = {
                     Text(
-                        text = TaskState.entries[it].toText(),
+                        text = TaskState.entries[it].toDisplayName(),
                         color = if (selectedState == TaskState.entries[it]) Color(0xFF1447E6) else Color.Black,
                         modifier = Modifier.width(200.dp).padding(vertical = 16.dp),
                         textAlign = TextAlign.Center,
