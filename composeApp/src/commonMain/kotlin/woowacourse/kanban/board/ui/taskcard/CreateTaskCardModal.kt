@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -45,6 +46,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
+
+fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
+    clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        onClick = onClick,
+    )
+}
 
 @Composable
 fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
@@ -277,7 +286,7 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         items(TaskState.entries.size) {
-            CustomButton(
+            Box(
                 modifier = Modifier
                     .border(
                         2.dp,
@@ -285,8 +294,8 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
                         RoundedCornerShape(8.dp),
                     )
                     .background(if (selectedState == TaskState.entries[it]) Color(0xFFEFF6FF) else Color.White)
-                    .semantics { selected = selectedState == TaskState.entries[it] },
-                onClick = { onStateChanged(TaskState.entries[it]) },
+                    .semantics { selected = selectedState == TaskState.entries[it] }
+                    .noRippleClickable { onStateChanged(TaskState.entries[it]) },
                 content = {
                     Text(
                         text = TaskState.entries[it].toDisplayName(),
@@ -299,19 +308,6 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
         }
     }
 }
-
-@Composable
-private fun CustomButton(content: @Composable () -> Unit, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-        ) { onClick() },
-    ) {
-        content()
-    }
-}
-
 @Composable
 private fun AuthorSelectField(
     selectedAuthor: String,
@@ -324,12 +320,12 @@ private fun AuthorSelectField(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(authors.size) { author ->
-            CustomButton(
+            Box(
                 modifier = Modifier.width(200.dp)
                     .border(2.dp, if (selectedAuthor == authors[author]) Color(0xFF615FFF) else Color(0xFFE5E7EB), RoundedCornerShape(8.dp))
                     .background(if (selectedAuthor == authors[author]) Color(0xFFEEF2FF) else Color.White)
-                    .semantics { selected = selectedAuthor == authors[author] },
-                onClick = { onAuthorSelected(authors[author]) },
+                    .semantics { selected = selectedAuthor == authors[author] }
+                    .noRippleClickable { onAuthorSelected(authors[author]) },
                 content = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
