@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
 
@@ -56,7 +57,7 @@ fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
 }
 
 @Composable
-fun CreateTaskCardModal(authors: List<String>, modifier: Modifier = Modifier) {
+fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
     var title by remember { mutableStateOf("") }
     var isTitleError by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
@@ -227,7 +228,7 @@ private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskS
 }
 
 @Composable
-private fun AuthorInputField(authors: List<String>, selectedAuthor: String, onAuthorSelected: (String) -> Unit) {
+private fun AuthorInputField(authors: AuthorGroup, selectedAuthor: String, onAuthorSelected: (String) -> Unit) {
     LabeledField(
         label = "담당자 *",
         content = {
@@ -312,7 +313,7 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
 private fun AuthorSelectField(
     selectedAuthor: String,
     onAuthorSelected: (String) -> Unit,
-    authors: List<String>,
+    authors: AuthorGroup,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -412,7 +413,7 @@ private fun CustomTextField(
 @Composable
 private fun PreviewCreateTaskCardModal() {
     CreateTaskCardModal(
-        authors = listOf("다이노", "페임스"),
+        authors = AuthorGroup(authors = listOf("다이노", "페임스")),
         modifier = Modifier
             .background(Color.White).padding(16.dp),
     )

@@ -10,6 +10,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
+import woowacourse.kanban.board.domain.AuthorGroup
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -17,7 +18,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `제목을 입력하지 않으면 에러 문구가 노출된다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
 
         val typedTitle = "지워질 제목입니다"
@@ -30,7 +31,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `제목을 입력하지 않으면 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
 
         val typedTitle = "지워질 제목입니다"
@@ -43,7 +44,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `태그가 쉼표로 시작하면 형식 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
         onNodeWithText("생성").assertIsEnabled()
 
@@ -56,7 +57,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `태그가 쉼표로 끝나면 형식 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
         onNodeWithText("생성").assertIsEnabled()
 
@@ -69,7 +70,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `쉼표가 연달아 나오면 형식 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
         onNodeWithText("생성").assertIsEnabled()
 
@@ -82,7 +83,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `태그가 5자 이내가 아니라면 태그 규칙 위반 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
         onNodeWithText("생성").assertIsEnabled()
 
@@ -95,7 +96,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `태그가 5개를 초과하면 태그 규칙 위반 에러가 노출되고 생성 버튼이 활성화되지 않는다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
         onNodeWithText("생성").assertIsEnabled()
 
@@ -108,7 +109,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `태스크 상태로 첫 번째 요소가 기본으로 선택된다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
 
         onNodeWithText("To Do").assertIsSelected()
@@ -120,7 +121,7 @@ class CreateTaskCardModalTest {
         // when
 
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
         onNodeWithText("To Do").performClick()
         onNodeWithText("In Progress").performClick()
@@ -135,7 +136,7 @@ class CreateTaskCardModalTest {
 
     @Test
     fun `담당자는 첫 번째 요소가 기본으로 선택된다`() = runComposeUiTest {
-        val authors = listOf("다이노", "페임스")
+        val authors = AuthorGroup(authors = listOf("다이노", "페임스"))
 
         setContent {
             CreateTaskCardModal(authors = authors)
@@ -146,7 +147,7 @@ class CreateTaskCardModalTest {
 
     @Test
     fun `담당자는 한 항목만 선택 가능하다`() = runComposeUiTest {
-        val authors = listOf("다이노", "페임스")
+        val authors = AuthorGroup(authors = listOf("다이노", "페임스"))
 
         setContent {
             CreateTaskCardModal(authors = authors)
@@ -164,7 +165,7 @@ class CreateTaskCardModalTest {
     @Test
     fun `제목과 태그가 규칙에 맞게 입력되면 생성 버튼을 누를 수 있다`() = runComposeUiTest {
         setContent {
-            CreateTaskCardModal(authors = listOf("다이노", "페임스"))
+            CreateTaskCardModal(authors = AuthorGroup(authors = listOf("다이노", "페임스")))
         }
         onNodeWithText("생성").performClick() // 초기 화면은 항상 생성 버튼이 활성회되기 때문에 비활성화 처리를 위해 수행
 
