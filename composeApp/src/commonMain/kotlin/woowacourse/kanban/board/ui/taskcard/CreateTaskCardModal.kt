@@ -174,7 +174,13 @@ private fun ContentInputField(content: String, onValueChange: (String) -> Unit, 
 }
 
 @Composable
-private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError: Boolean, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun TagsInputField(
+    tags: String,
+    isTagsError: Boolean,
+    isTagFormatError: Boolean,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val isError = isTagsError || isTagFormatError
     LabeledField(
         modifier = modifier,
@@ -226,14 +232,19 @@ private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskS
             TaskStateSelectField(
                 selectedState = selectedState,
                 onStateChanged = onStateChanged,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         },
     )
 }
 
 @Composable
-private fun AuthorInputField(authors: AuthorGroup, selectedAuthor: String, onAuthorSelected: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun AuthorInputField(
+    authors: AuthorGroup,
+    selectedAuthor: String,
+    onAuthorSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     LabeledField(
         modifier = modifier,
         label = "담당자 *",
@@ -242,7 +253,7 @@ private fun AuthorInputField(authors: AuthorGroup, selectedAuthor: String, onAut
                 selectedAuthor = selectedAuthor,
                 onAuthorSelected = onAuthorSelected,
                 authors = authors,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         },
     )

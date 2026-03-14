@@ -10,8 +10,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
-import woowacourse.kanban.board.domain.AuthorGroup
 import kotlin.test.Test
+import woowacourse.kanban.board.domain.AuthorGroup
 
 @OptIn(ExperimentalTestApi::class)
 class CreateTaskCardModalTest {
