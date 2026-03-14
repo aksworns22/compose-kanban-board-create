@@ -72,14 +72,14 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        CreateTaskHeader()
+        CreateTaskHeader(modifier = Modifier.fillMaxWidth())
         HorizontalDivider()
-        TitleInputField(title, isTitleError) {
+        TitleInputField(title = title, isTitleError = isTitleError, onValueChange = {
             title = it
             isTitleError = !Task.isValidTitle(it)
-        }
-        ContentInputField(content) { content = it }
-        TagsInputField(tags, isTagsError, isTagFormatError) {
+        })
+        ContentInputField(content = content, onValueChange = { content = it })
+        TagsInputField(tags = tags, isTagsError = isTagsError, isTagFormatError = isTagFormatError, onValueChange = {
             tags = it
             val splitTags = tags.split(",").map { tag -> tag.trim() }
             if (tags.isEmpty()) {
@@ -89,26 +89,26 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
                 isTagFormatError = splitTags.any { tag -> tag.isEmpty() }
                 isTagsError = !Task.isValidTags(splitTags)
             }
-        }
-        TaskStateInputField(selectedState) { newTaskState ->
+        })
+        TaskStateInputField(selectedState = selectedState, onStateChanged = { newTaskState ->
             selectedState = newTaskState
-        }
-        AuthorInputField(authors, selectedAuthor) { newAuthor ->
+        })
+        AuthorInputField(authors = authors, selectedAuthor = selectedAuthor, onAuthorSelected = { newAuthor ->
             selectedAuthor = newAuthor
-        }
+        })
 
         HorizontalDivider()
 
-        CreateTaskActionButtons(isNewTaskEnabled) {
+        CreateTaskActionButtons(isNewTaskEnabled = isNewTaskEnabled, onCreateClick = {
             isTitleError = !Task.isValidTitle(title)
-        }
+        }, modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-private fun CreateTaskHeader() {
+private fun CreateTaskHeader(modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -126,8 +126,9 @@ private fun CreateTaskHeader() {
 }
 
 @Composable
-private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange: (String) -> Unit) {
+private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
     LabeledField(
+        modifier = modifier,
         label = "제목 *",
         content = {
             CustomTextField(
@@ -156,8 +157,9 @@ private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange:
 }
 
 @Composable
-private fun ContentInputField(content: String, onValueChange: (String) -> Unit) {
+private fun ContentInputField(content: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
     LabeledField(
+        modifier = modifier,
         label = "설명",
         content = {
             CustomTextField(
@@ -165,16 +167,17 @@ private fun ContentInputField(content: String, onValueChange: (String) -> Unit) 
                 onValueChange = onValueChange,
                 placeholder = "태스크에 대한 자세한 설명을 입력하세요",
                 singleLine = false,
-                modifier = Modifier.heightIn(min = 144.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 144.dp),
             )
         },
     )
 }
 
 @Composable
-private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError: Boolean, onValueChange: (String) -> Unit) {
+private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError: Boolean, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
     val isError = isTagsError || isTagFormatError
     LabeledField(
+        modifier = modifier,
         label = "태그",
         content = {
             CustomTextField(
@@ -215,36 +218,40 @@ private fun TagsInputField(tags: String, isTagsError: Boolean, isTagFormatError:
 }
 
 @Composable
-private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskState) -> Unit) {
+private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskState) -> Unit, modifier: Modifier = Modifier) {
     LabeledField(
+        modifier = modifier,
         label = "상태 *",
         content = {
             TaskStateSelectField(
                 selectedState = selectedState,
                 onStateChanged = onStateChanged,
+                modifier = Modifier.fillMaxWidth()
             )
         },
     )
 }
 
 @Composable
-private fun AuthorInputField(authors: AuthorGroup, selectedAuthor: String, onAuthorSelected: (String) -> Unit) {
+private fun AuthorInputField(authors: AuthorGroup, selectedAuthor: String, onAuthorSelected: (String) -> Unit, modifier: Modifier = Modifier) {
     LabeledField(
+        modifier = modifier,
         label = "담당자 *",
         content = {
             AuthorSelectField(
                 selectedAuthor = selectedAuthor,
                 onAuthorSelected = onAuthorSelected,
                 authors = authors,
+                modifier = Modifier.fillMaxWidth()
             )
         },
     )
 }
 
 @Composable
-private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: () -> Unit) {
+private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -283,7 +290,7 @@ private fun TaskState.toDisplayName(): String = when (this) {
 @Composable
 private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (TaskState) -> Unit, modifier: Modifier = Modifier) {
     LazyRow(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         items(TaskState.entries.size) {
@@ -317,7 +324,7 @@ private fun AuthorSelectField(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(authors.size) { author ->
@@ -383,7 +390,6 @@ private fun CustomTextField(
 ) {
     TextField(
         modifier = modifier
-            .fillMaxWidth()
             .border(1.dp, Color(0xFF79747E), RoundedCornerShape(8.dp)),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
