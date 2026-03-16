@@ -2,8 +2,6 @@ package woowacourse.kanban.board.ui.taskcard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -47,26 +44,6 @@ import androidx.compose.ui.unit.sp
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
-
-fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
-    clickable(
-        interactionSource = remember { MutableInteractionSource() },
-        indication = null,
-        onClick = onClick,
-    )
-}
-
-enum class TagValidationState(val isError: Boolean) {
-    VALID(false),
-    FORMAT_ERROR(true),
-    SIZE_OR_COUNT_ERROR(true),
-}
-
-enum class TitleValidationState {
-    INIT,
-    VALID,
-    EMPTY_ERROR,
-}
 
 @Composable
 fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
@@ -403,11 +380,12 @@ private fun AuthorSelectField(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(authors.size) { author ->
+            val isSelected = selectedAuthor == authors[author]
             Box(
                 modifier = Modifier.width(200.dp)
-                    .border(2.dp, if (selectedAuthor == authors[author]) Color(0xFF615FFF) else Color(0xFFE5E7EB), RoundedCornerShape(8.dp))
-                    .background(if (selectedAuthor == authors[author]) Color(0xFFEEF2FF) else Color.White)
-                    .semantics { selected = selectedAuthor == authors[author] }
+                    .border(2.dp, if (isSelected) Color(0xFF615FFF) else Color(0xFFE5E7EB), RoundedCornerShape(8.dp))
+                    .background(if (isSelected) Color(0xFFEEF2FF) else Color.White)
+                    .semantics { selected = isSelected }
                     .noRippleClickable { onAuthorSelected(authors[author]) },
                 content = {
                     Row(
