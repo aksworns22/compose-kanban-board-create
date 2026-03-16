@@ -56,17 +56,30 @@ fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     )
 }
 
+enum class TagValidationState(val isError: Boolean) {
+    VALID(false), FORMAT_ERROR(true), SIZE_OR_COUNT_ERROR(true)
+}
+
 @Composable
 fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
     var title by remember { mutableStateOf("") }
     var isTitleError by remember { mutableStateOf(false) }
     var content by remember { mutableStateOf("") }
     var tags by remember { mutableStateOf("") }
-    var isTagsError by remember { mutableStateOf(false) }
-    var isTagFormatError by remember { mutableStateOf(false) }
+    val tagValidationState by remember {
+        derivedStateOf {
+            val splitTags = tags.split(",").map { tag -> tag.trim() }
+            when {
+                tags.isEmpty() -> TagValidationState.VALID
+                splitTags.any { tag -> tag.isEmpty() } -> TagValidationState.FORMAT_ERROR
+                !Task.isValidTags(splitTags) -> TagValidationState.SIZE_OR_COUNT_ERROR
+                else -> TagValidationState.VALID
+            }
+        }
+    }
     var selectedState by remember { mutableStateOf(TaskState.TO_DO) }
     var selectedAuthor by remember { mutableStateOf(authors.first()) }
-    val isNewTaskEnabled by remember { derivedStateOf { !isTitleError && !isTagsError && !isTagFormatError } }
+    val isNewTaskEnabled = !isTitleError && !tagValidationState.isError
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -74,34 +87,42 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
     ) {
         CreateTaskHeader(modifier = Modifier.fillMaxWidth())
         HorizontalDivider()
-        TitleInputField(title = title, isTitleError = isTitleError, onValueChange = {
-            title = it
-            isTitleError = !Task.isValidTitle(it)
-        })
+        TitleInputField(
+            title = title, isTitleError = isTitleError,
+            onValueChange = {
+                title = it
+                isTitleError = !Task.isValidTitle(it)
+            },
+        )
         ContentInputField(content = content, onValueChange = { content = it })
-        TagsInputField(tags = tags, isTagsError = isTagsError, isTagFormatError = isTagFormatError, onValueChange = {
-            tags = it
-            val splitTags = tags.split(",").map { tag -> tag.trim() }
-            if (tags.isEmpty()) {
-                isTagFormatError = false
-                isTagsError = false
-            } else {
-                isTagFormatError = splitTags.any { tag -> tag.isEmpty() }
-                isTagsError = !Task.isValidTags(splitTags)
-            }
-        })
-        TaskStateInputField(selectedState = selectedState, onStateChanged = { newTaskState ->
-            selectedState = newTaskState
-        })
-        AuthorInputField(authors = authors, selectedAuthor = selectedAuthor, onAuthorSelected = { newAuthor ->
-            selectedAuthor = newAuthor
-        })
+        TagsInputField(
+            tagsProvider =  { tags }, tagValidationState = tagValidationState,
+            onValueChange = {
+                tags = it
+            },
+        )
+        TaskStateInputField(
+            selectedState = selectedState,
+            onStateChanged = { newTaskState ->
+                selectedState = newTaskState
+            },
+        )
+        AuthorInputField(
+            authors = authors, selectedAuthor = selectedAuthor,
+            onAuthorSelected = { newAuthor ->
+                selectedAuthor = newAuthor
+            },
+        )
 
         HorizontalDivider()
 
-        CreateTaskActionButtons(isNewTaskEnabled = isNewTaskEnabled, onCreateClick = {
-            isTitleError = !Task.isValidTitle(title)
-        }, modifier = Modifier.fillMaxWidth())
+        CreateTaskActionButtons(
+            isNewTaskEnabled = isNewTaskEnabled,
+            onCreateClick = {
+                isTitleError = !Task.isValidTitle(title)
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -175,19 +196,17 @@ private fun ContentInputField(content: String, onValueChange: (String) -> Unit, 
 
 @Composable
 private fun TagsInputField(
-    tags: String,
-    isTagsError: Boolean,
-    isTagFormatError: Boolean,
+    tagsProvider: () -> String,
+    tagValidationState: TagValidationState,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isError = isTagsError || isTagFormatError
     LabeledField(
         modifier = modifier,
         label = "태그",
         content = {
             CustomTextField(
-                value = tags,
+                value = tagsProvider(),
                 onValueChange = onValueChange,
                 placeholder = "태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)",
                 singleLine = true,
@@ -195,11 +214,11 @@ private fun TagsInputField(
                     .fillMaxWidth()
                     .border(
                         1.dp,
-                        if (isError) Color(0xFFB3261E) else Color(0xFF79747E),
+                        if (tagValidationState.isError) Color(0xFFB3261E) else Color(0xFF79747E),
                         RoundedCornerShape(8.dp),
                     ),
                 trailingIcon = {
-                    if (isError) Icon(
+                    if (tagValidationState.isError) Icon(
                         Icons.Default.Error,
                         tint = Color(0xFFB3261E),
                         contentDescription = "경고",
@@ -210,14 +229,14 @@ private fun TagsInputField(
         infoContent = {
             Text(
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                text = when {
-                    isTagFormatError -> "태그 형식이 올바르지 않습니다."
-                    isTagsError -> "태그는 5자 이내로 5개까지만 등록할 수 있습니다."
-                    else -> "5자 이내의 태그를 최대 5개까지 등록할 수 있습니다."
+                text = when (tagValidationState) {
+                    TagValidationState.VALID -> "5자 이내의 태그를 최대 5개까지 등록할 수 있습니다."
+                    TagValidationState.FORMAT_ERROR -> "태그 형식이 올바르지 않습니다."
+                    TagValidationState.SIZE_OR_COUNT_ERROR -> "태그는 5자 이내로 5개까지만 등록할 수 있습니다."
                 },
                 fontWeight = FontWeight.W400,
                 fontSize = 12.sp,
-                color = if (isError) Color(0xFFB3261E) else Color(0xFF45454F),
+                color = if (tagValidationState.isError) Color(0xFFB3261E) else Color(0xFF45454F),
             )
         },
     )
@@ -327,6 +346,7 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
         }
     }
 }
+
 @Composable
 private fun AuthorSelectField(
     selectedAuthor: String,
