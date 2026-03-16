@@ -95,7 +95,7 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
     var selectedState by remember { mutableStateOf(TaskState.TO_DO) }
     var selectedAuthor by remember { mutableStateOf(authors.first()) }
     val isNewTaskEnabled = when (titleValidationState) {
-        TitleValidationState.INIT -> true
+        TitleValidationState.INIT -> !tagValidationState.isError
         TitleValidationState.VALID -> !tagValidationState.isError
         TitleValidationState.EMPTY_ERROR -> false
     }
