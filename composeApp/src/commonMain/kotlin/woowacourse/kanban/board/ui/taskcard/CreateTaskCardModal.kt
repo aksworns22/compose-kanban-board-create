@@ -57,13 +57,28 @@ fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
 }
 
 enum class TagValidationState(val isError: Boolean) {
-    VALID(false), FORMAT_ERROR(true), SIZE_OR_COUNT_ERROR(true)
+    VALID(false),
+    FORMAT_ERROR(true),
+    SIZE_OR_COUNT_ERROR(true),
+}
+
+enum class TitleValidationState {
+    INIT,
+    VALID,
+    EMPTY_ERROR,
 }
 
 @Composable
 fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
     var title by remember { mutableStateOf("") }
-    var isTitleError by remember { mutableStateOf(false) }
+    var isTitleInitialized by remember { mutableStateOf(false) }
+    val titleValidationState by remember {
+        derivedStateOf {
+            if (!isTitleInitialized) TitleValidationState.INIT
+            else if (Task.isValidTitle(title)) TitleValidationState.VALID
+            else TitleValidationState.EMPTY_ERROR
+        }
+    }
     var content by remember { mutableStateOf("") }
     var tags by remember { mutableStateOf("") }
     val tagValidationState by remember {
@@ -79,7 +94,11 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
     }
     var selectedState by remember { mutableStateOf(TaskState.TO_DO) }
     var selectedAuthor by remember { mutableStateOf(authors.first()) }
-    val isNewTaskEnabled = !isTitleError && !tagValidationState.isError
+    val isNewTaskEnabled = when (titleValidationState) {
+        TitleValidationState.INIT -> true
+        TitleValidationState.VALID -> !tagValidationState.isError
+        TitleValidationState.EMPTY_ERROR -> false
+    }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -88,15 +107,15 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
         CreateTaskHeader(modifier = Modifier.fillMaxWidth())
         HorizontalDivider()
         TitleInputField(
-            title = title, isTitleError = isTitleError,
+            titleProvider = { title }, isTitleError = titleValidationState,
             onValueChange = {
                 title = it
-                isTitleError = !Task.isValidTitle(it)
+                isTitleInitialized = true
             },
         )
         ContentInputField(content = content, onValueChange = { content = it })
         TagsInputField(
-            tagsProvider =  { tags }, tagValidationState = tagValidationState,
+            tagsProvider = { tags }, tagValidationState = tagValidationState,
             onValueChange = {
                 tags = it
             },
@@ -119,7 +138,7 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
         CreateTaskActionButtons(
             isNewTaskEnabled = isNewTaskEnabled,
             onCreateClick = {
-                isTitleError = !Task.isValidTitle(title)
+                isTitleInitialized = true
             },
             modifier = Modifier.fillMaxWidth(),
         )
@@ -147,25 +166,47 @@ private fun CreateTaskHeader(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TitleInputField(title: String, isTitleError: Boolean, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun TitleInputField(
+    titleProvider: () -> String,
+    isTitleError: TitleValidationState,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     LabeledField(
         modifier = modifier,
         label = "제목 *",
         content = {
             CustomTextField(
-                value = title,
+                value = titleProvider(),
                 onValueChange = onValueChange,
                 placeholder = "태스크 제목을 입력하세요",
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, if (isTitleError) Color(0xFFB3261E) else Color(0xFF79747E), RoundedCornerShape(8.dp)),
-                trailingIcon = { if (isTitleError) Icon(Icons.Default.Error, tint = Color(0xFFB3261E), contentDescription = "경고") },
+                    .border(
+                        1.dp,
+                        when (isTitleError) {
+                            TitleValidationState.INIT, TitleValidationState.VALID -> Color(0xFF79747E)
+                            TitleValidationState.EMPTY_ERROR -> Color(0xFFB3261E)
+                        },
+                        RoundedCornerShape(8.dp),
+                    ),
+                trailingIcon = {
+                    when (isTitleError) {
+                        TitleValidationState.INIT, TitleValidationState.VALID -> {}
+                        TitleValidationState.EMPTY_ERROR -> Icon(
+                            imageVector = Icons.Default.Error,
+                            tint = Color(0xFFB3261E),
+                            contentDescription = "경고",
+                        )
+                    }
+                },
             )
         },
         infoContent = {
-            if (isTitleError) {
-                Text(
+            when (isTitleError) {
+                TitleValidationState.INIT, TitleValidationState.VALID -> { }
+                TitleValidationState.EMPTY_ERROR -> Text(
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp),
                     text = "제목을 입력해주세요.",
                     fontWeight = FontWeight.W400,
