@@ -107,7 +107,8 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
         CreateTaskHeader(modifier = Modifier.fillMaxWidth())
         HorizontalDivider()
         TitleInputField(
-            titleProvider = { title }, isTitleError = titleValidationState,
+            titleProvider = { title },
+            isTitleError = titleValidationState,
             onValueChange = {
                 title = it
                 isTitleInitialized = true
@@ -115,7 +116,8 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
         )
         ContentInputField(content = content, onValueChange = { content = it })
         TagsInputField(
-            tagsProvider = { tags }, tagValidationState = tagValidationState,
+            tagsProvider = { tags },
+            tagValidationState = tagValidationState,
             onValueChange = {
                 tags = it
             },
@@ -365,20 +367,21 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         items(TaskState.entries.size) {
+            val isSelected = selectedState == TaskState.entries[it]
             Box(
                 modifier = Modifier
                     .border(
                         2.dp,
-                        if (selectedState == TaskState.entries[it]) Color(0xFF1447E6) else Color(0xFFE5E7EB),
+                        if (isSelected) Color(0xFF1447E6) else Color(0xFFE5E7EB),
                         RoundedCornerShape(8.dp),
                     )
-                    .background(if (selectedState == TaskState.entries[it]) Color(0xFFEFF6FF) else Color.White)
-                    .semantics { selected = selectedState == TaskState.entries[it] }
+                    .background(if (isSelected) Color(0xFFEFF6FF) else Color.White)
+                    .semantics { selected = isSelected }
                     .noRippleClickable { onStateChanged(TaskState.entries[it]) },
                 content = {
                     Text(
                         text = TaskState.entries[it].toDisplayName(),
-                        color = if (selectedState == TaskState.entries[it]) Color(0xFF1447E6) else Color.Black,
+                        color = if (isSelected) Color(0xFF1447E6) else Color.Black,
                         modifier = Modifier.width(200.dp).padding(vertical = 16.dp),
                         textAlign = TextAlign.Center,
                     )
