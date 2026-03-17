@@ -1,25 +1,24 @@
 package woowacourse.kanban.board.domain
 
-data class Task(
-    val title: String,
-    val content: String = "",
-    val tags: List<Tag> = listOf(),
-    val taskState: TaskState = TaskState.TO_DO,
-    val author: String,
-) {
+data class Task(val title: Title, val content: String, val tags: TagGroup, val taskState: TaskState = TaskState.TO_DO, val author: Author)
+
+@JvmInline
+value class Author(val name: String) {
+    init {
+        require(isValid(name)) { "작성자는 공백이나 빈 값일 수 없습니다" }
+    }
     companion object {
-        fun of(title: String, content: String, tagsInput: List<String>, author: String): Task {
-            require(isValidTitle(title)) { "제목을 입력해주세요" }
-            require(author.isNotBlank()) { "작성자를 입력해주세요" }
-            require(isValidTagCount(tagsInput)) { "태그는 최대 5개까지 입력할 수 있습니다" }
-            val tags = tagsInput.map { Tag.from(it) }
-            return Task(title, content, tags, author = author)
-        }
+        fun isValid(value: String): Boolean = value.isNotBlank()
+    }
+}
 
-        fun isValidTitle(value: String): Boolean = value.isNotBlank()
+@JvmInline
+value class Title(val value: String) {
+    init {
+        require(isValid(value)) { "제목은 빈 값일 수 없습니다" }
+    }
 
-        fun isValidTags(tags: List<String>): Boolean = tags.all { Tag.isValid(it) } && isValidTagCount(tags)
-
-        private fun isValidTagCount(tags: List<String>): Boolean = tags.size <= 5
+    companion object {
+        fun isValid(value: String): Boolean = value.isNotBlank()
     }
 }

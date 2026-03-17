@@ -7,8 +7,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import woowacourse.kanban.board.domain.Task
+import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.TaskState
+import woowacourse.kanban.board.domain.Title
 
 @Composable
 fun rememberTaskCardCreationState(
@@ -36,7 +38,7 @@ class TaskCardCreationState(
         private set
     val titleValidationState by derivedStateOf {
         if (!this.isTitleInitialized) TitleValidationState.INIT
-        else if (Task.isValidTitle(this.title)) TitleValidationState.VALID
+        else if (Title.isValid(this.title)) TitleValidationState.VALID
         else TitleValidationState.EMPTY_ERROR
     }
     var content by mutableStateOf(content)
@@ -47,7 +49,8 @@ class TaskCardCreationState(
         when {
             this.tags.isEmpty() -> TagValidationState.VALID
             splitTags.any { tag -> tag.isEmpty() } -> TagValidationState.FORMAT_ERROR
-            !Task.isValidTags(splitTags) -> TagValidationState.SIZE_OR_COUNT_ERROR
+            splitTags.any { !Tag.isValid(it) } -> TagValidationState.SIZE_OR_COUNT_ERROR
+            !TagGroup.isValid(splitTags.map { Tag(it) }) -> TagValidationState.SIZE_OR_COUNT_ERROR
             else -> TagValidationState.VALID
         }
     }

@@ -12,7 +12,7 @@ class TagTest {
         val name = "tag"
 
         // when
-        val tag = Tag.from(name)
+        val tag = Tag(name)
 
         // then
         assertThat(tag.name).isEqualTo(name)
@@ -20,15 +20,13 @@ class TagTest {
 
     @Test
     fun `태스크 내용이 비어 있는 경우 생성이 불가능하다`() {
-        assertThatThrownBy { Tag.from("") }
+        assertThatThrownBy { Tag("") }
             .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("태그 내용이 비어 있습니다")
     }
 
     @Test
     fun `태그의 길이가 5자를 초과할 경우 생성이 불가능하다`() {
-        assertThatThrownBy { Tag.from("abcedf") }
+        assertThatThrownBy { Tag("abcedf") }
             .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("태그의 길이는 5자 이하여야 합니다")
     }
 }

@@ -32,7 +32,7 @@ import kanbanboard.composeapp.generated.resources.Res
 import kanbanboard.composeapp.generated.resources.profile_image
 import org.jetbrains.compose.resources.painterResource
 import woowacourse.kanban.board.data.tasksData
-import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.Task
 
 private class TaskCardPreviewParameterProvider : PreviewParameterProvider<Task> {
@@ -53,11 +53,11 @@ fun TaskCard(@PreviewParameter(TaskCardPreviewParameterProvider::class) task: Ta
             modifier = Modifier.padding(17.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Title(title = task.title)
+            Title(title = task.title.value)
             if (task.content.isNotEmpty()) Content(content = task.content)
-            if (task.tags.isNotEmpty()) Tags(tags = task.tags)
+            if (!task.tags.isEmpty) Tags(tagGroup = task.tags)
             HorizontalDivider(color = Color(0xFFE5E7EB))
-            Profile(author = task.author)
+            Profile(author = task.author.name)
         }
     }
 }
@@ -87,12 +87,12 @@ fun Content(content: String) {
 }
 
 @Composable
-fun Tags(tags: List<Tag>) {
+fun Tags(tagGroup: TagGroup) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        tags.forEach { tag ->
+        tagGroup.tags.forEach { tag ->
             Box(
                 modifier = Modifier
                     .height(24.dp)

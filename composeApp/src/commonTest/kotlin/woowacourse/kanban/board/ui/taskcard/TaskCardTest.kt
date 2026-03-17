@@ -4,8 +4,12 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
 import org.junit.Test
+import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.Task
+import woowacourse.kanban.board.domain.TaskState
+import woowacourse.kanban.board.domain.Title
 
 @OptIn(ExperimentalTestApi::class)
 class TaskCardTest {
@@ -14,10 +18,10 @@ class TaskCardTest {
     @Test
     fun `모든 필드가 있는 카드 - 제목, 설명, 태그, 담당자 모두 노출`() = runComposeUiTest {
         val task = Task(
-            title = "LazyColumn 컴포넌트 구현",
+            title = Title("LazyColumn 컴포넌트 구현"),
             content = "세로 스크롤 가능한 리스트 컴포넌트를 만들고 성능 최적화를 적용합니다.",
-            tags = listOf(Tag("컴포넌트"), Tag("성능")),
-            author = "다이노",
+            tags = TagGroup(listOf(Tag("컴포넌트"), Tag("성능"))),
+            author = Author("다이노"),
         )
 
         setContent {
@@ -38,9 +42,11 @@ class TaskCardTest {
     @Test
     fun `제목, 태그, 담당자 필드가 있는 카드 - 제목, 태그 담당자 노출`() = runComposeUiTest {
         val task = Task(
-            title = "LazyColumn 컴포넌트 구현",
-            tags = listOf(Tag("컴포넌트"), Tag("성능")),
-            author = "다이노",
+            title = Title("LazyColumn 컴포넌트 구현"),
+            content = "",
+            tags = TagGroup(listOf(Tag("컴포넌트"), Tag("성능"))),
+            taskState = TaskState.TO_DO,
+            author = Author("다이노"),
         )
 
         setContent {
@@ -56,9 +62,11 @@ class TaskCardTest {
     @Test
     fun `제목, 설명, 담당자 필드가 있는 카드 - 제목, 설명, 담당자 노출`() = runComposeUiTest {
         val task = Task(
-            title = "LazyColumn 컴포넌트 구현",
+            title = Title("LazyColumn 컴포넌트 구현"),
             content = "세로 스크롤 가능한 리스트 컴포넌트를 만들고 성능 최적화를 적용합니다.",
-            author = "다이노",
+            tags = TagGroup(emptyList()),
+            taskState = TaskState.TO_DO,
+            author = Author("다이노"),
         )
 
         setContent {
@@ -76,8 +84,11 @@ class TaskCardTest {
     @Test
     fun `제목, 담당자 필드가 있는 카드 - 제목, 담당자 노출`() = runComposeUiTest {
         val task = Task(
-            title = "LazyColumn 컴포넌트 구현",
-            author = "다이노",
+            title = Title("LazyColumn 컴포넌트 구현"),
+            content = "",
+            tags = TagGroup(emptyList()),
+            taskState = TaskState.TO_DO,
+            author = Author("다이노"),
         )
 
         setContent {
