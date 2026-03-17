@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -26,11 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,41 +38,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import woowacourse.kanban.board.domain.AuthorGroup
-import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
 
 @Composable
-fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
-    var title by remember { mutableStateOf("") }
-    var isTitleInitialized by remember { mutableStateOf(false) }
-    val titleValidationState by remember {
-        derivedStateOf {
-            if (!isTitleInitialized) TitleValidationState.INIT
-            else if (Task.isValidTitle(title)) TitleValidationState.VALID
-            else TitleValidationState.EMPTY_ERROR
-        }
-    }
-    var content by remember { mutableStateOf("") }
-    var tags by remember { mutableStateOf("") }
-    val tagValidationState by remember {
-        derivedStateOf {
-            val splitTags = tags.split(",").map { tag -> tag.trim() }
-            when {
-                tags.isEmpty() -> TagValidationState.VALID
-                splitTags.any { tag -> tag.isEmpty() } -> TagValidationState.FORMAT_ERROR
-                !Task.isValidTags(splitTags) -> TagValidationState.SIZE_OR_COUNT_ERROR
-                else -> TagValidationState.VALID
-            }
-        }
-    }
-    var selectedState by remember { mutableStateOf(TaskState.TO_DO) }
-    var selectedAuthor by remember { mutableStateOf(authors.first()) }
-    val isNewTaskEnabled = when (titleValidationState) {
-        TitleValidationState.INIT -> !tagValidationState.isError
-        TitleValidationState.VALID -> !tagValidationState.isError
-        TitleValidationState.EMPTY_ERROR -> false
-    }
-
+fun CreateTaskCardModal(taskCardCreationState: TaskCardCreationState, authors: AuthorGroup, modifier: Modifier = Modifier) {
+    rememberScrollState()
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -84,40 +50,39 @@ fun CreateTaskCardModal(authors: AuthorGroup, modifier: Modifier = Modifier) {
         CreateTaskHeader(modifier = Modifier.fillMaxWidth())
         HorizontalDivider()
         TitleInputField(
-            titleProvider = { title },
-            isTitleError = titleValidationState,
+            titleProvider = { taskCardCreationState.title },
+            isTitleError = { taskCardCreationState.titleValidationState },
             onValueChange = {
-                title = it
-                isTitleInitialized = true
+                taskCardCreationState.updateTitle(it)
             },
         )
-        ContentInputField(content = content, onValueChange = { content = it })
+        ContentInputField(content = taskCardCreationState.content, onValueChange = { taskCardCreationState.content = it })
         TagsInputField(
-            tagsProvider = { tags },
-            tagValidationState = tagValidationState,
+            tagsProvider = { taskCardCreationState.tags },
+            tagValidationState = taskCardCreationState.tagValidationState,
             onValueChange = {
-                tags = it
+                taskCardCreationState.tags = it
             },
         )
         TaskStateInputField(
-            selectedState = selectedState,
+            selectedState = taskCardCreationState.selectedState,
             onStateChanged = { newTaskState ->
-                selectedState = newTaskState
+                taskCardCreationState.selectedState = newTaskState
             },
         )
         AuthorInputField(
-            authors = authors, selectedAuthor = selectedAuthor,
+            authors = authors, selectedAuthor = taskCardCreationState.selectedAuthor,
             onAuthorSelected = { newAuthor ->
-                selectedAuthor = newAuthor
+                taskCardCreationState.selectedAuthor = newAuthor
             },
         )
 
         HorizontalDivider()
 
         CreateTaskActionButtons(
-            isNewTaskEnabled = isNewTaskEnabled,
+            isNewTaskEnabled = taskCardCreationState.isNewTaskEnabled,
             onCreateClick = {
-                isTitleInitialized = true
+                taskCardCreationState.updateCreateButtonClicked(true)
             },
             modifier = Modifier.fillMaxWidth(),
         )
@@ -147,10 +112,11 @@ private fun CreateTaskHeader(modifier: Modifier = Modifier) {
 @Composable
 private fun TitleInputField(
     titleProvider: () -> String,
-    isTitleError: TitleValidationState,
+    isTitleError: () -> TitleValidationState,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isTitleError = isTitleError()
     LabeledField(
         modifier = modifier,
         label = "제목 *",
@@ -184,7 +150,7 @@ private fun TitleInputField(
         },
         infoContent = {
             when (isTitleError) {
-                TitleValidationState.INIT, TitleValidationState.VALID -> { }
+                TitleValidationState.INIT, TitleValidationState.VALID -> {}
                 TitleValidationState.EMPTY_ERROR -> Text(
                     modifier = Modifier.padding(start = 16.dp, top = 4.dp),
                     text = "제목을 입력해주세요.",
@@ -471,8 +437,16 @@ private fun CustomTextField(
 )
 @Composable
 private fun PreviewCreateTaskCardModal() {
+    val authors = AuthorGroup(authors = listOf("다이노", "페임스"))
     CreateTaskCardModal(
-        authors = AuthorGroup(authors = listOf("다이노", "페임스")),
+        taskCardCreationState = TaskCardCreationState(
+            title = "",
+            content = "",
+            tags = "",
+            selectedState = TaskState.TO_DO,
+            selectedAuthor = authors.first(),
+        ),
+        authors = authors,
         modifier = Modifier
             .background(Color.White).padding(16.dp),
     )
