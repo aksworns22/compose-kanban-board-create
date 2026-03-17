@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.Tag
 import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.TaskState
@@ -18,7 +19,7 @@ fun rememberTaskCardCreationState(
     content: String = "",
     tags: String = "",
     selectedState: TaskState = TaskState.TO_DO,
-    selectedAuthor: String = "",
+    selectedAuthor: Author,
 ) = remember {
     TaskCardCreationState(title, content, tags, selectedState, selectedAuthor)
 }
@@ -29,7 +30,7 @@ class TaskCardCreationState(
     content: String = "",
     tags: String = "",
     selectedState: TaskState = TaskState.TO_DO,
-    selectedAuthor: String = "",
+    selectedAuthor: Author,
     isTitleInitialized: Boolean = false,
 ) {
     var title by mutableStateOf(title)

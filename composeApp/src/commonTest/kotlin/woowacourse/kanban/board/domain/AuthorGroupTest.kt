@@ -14,6 +14,6 @@ class AuthorGroupTest {
 
     @Test
     fun `담당자 그룹은 담당자가 한 명이상 들어오면 생성할 수 있다`() {
-        assertThat(AuthorGroup(authors = listOf("베르")).size).isEqualTo(1)
+        assertThat(AuthorGroup(authors = listOf(Author("베르"))).size).isEqualTo(1)
     }
 }

@@ -9,12 +9,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
+import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.TaskState
 
 @OptIn(ExperimentalTestApi::class)
 class CreateTaskCardModalTest {
-    val authors = AuthorGroup(authors = listOf("다이노", "페임스"))
+    val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
 
     @Test
     fun `제목을 입력하지 않으면 에러 문구가 노출되고 생성 버튼이 활성화 된다`() = runComposeUiTest {
@@ -176,7 +177,7 @@ class CreateTaskCardModalTest {
             CreateTaskCardModal(taskCardCreationState = taskCardCreationState, authors = authors)
         }
 
-        onNodeWithText(authors.first()).assertIsSelected()
+        onNodeWithText(authors.first().name).assertIsSelected()
     }
 
     @Test
@@ -193,11 +194,11 @@ class CreateTaskCardModalTest {
             CreateTaskCardModal(taskCardCreationState = taskCardCreationState, authors = authors)
         }
 
-        onNodeWithText(authors.first()).performClick()
-        onNodeWithText(authors.last()).performClick()
+        onNodeWithText(authors.first().name).performClick()
+        onNodeWithText(authors.last().name).performClick()
 
-        onNodeWithText(authors.first()).assertIsNotSelected()
-        onNodeWithText(authors.last()).assertIsSelected()
+        onNodeWithText(authors.first().name).assertIsNotSelected()
+        onNodeWithText(authors.last().name).assertIsSelected()
     }
 
     @Test

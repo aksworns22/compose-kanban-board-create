@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.TaskState
 
@@ -246,8 +247,8 @@ private fun TaskStateInputField(selectedState: TaskState, onStateChanged: (TaskS
 @Composable
 private fun AuthorInputField(
     authors: AuthorGroup,
-    selectedAuthor: String,
-    onAuthorSelected: (String) -> Unit,
+    selectedAuthor: Author,
+    onAuthorSelected: (Author) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LabeledField(
@@ -336,8 +337,8 @@ private fun TaskStateSelectField(selectedState: TaskState, onStateChanged: (Task
 
 @Composable
 private fun AuthorSelectField(
-    selectedAuthor: String,
-    onAuthorSelected: (String) -> Unit,
+    selectedAuthor: Author,
+    onAuthorSelected: (Author) -> Unit,
     authors: AuthorGroup,
     modifier: Modifier = Modifier,
 ) {
@@ -364,7 +365,7 @@ private fun AuthorSelectField(
                             contentDescription = "기본 프로필 이미지",
                         )
                         Text(
-                            text = authors[author],
+                            text = authors[author].name,
                             color = Color(0xFF101828),
                             modifier = Modifier.padding(vertical = 16.dp),
                             textAlign = TextAlign.Center,
@@ -437,7 +438,7 @@ private fun CustomTextField(
 )
 @Composable
 private fun PreviewCreateTaskCardModal() {
-    val authors = AuthorGroup(authors = listOf("다이노", "페임스"))
+    val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
     CreateTaskCardModal(
         taskCardCreationState = TaskCardCreationState(
             title = "",

@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.ui.taskcard.CreateTaskCardModal
@@ -15,7 +16,7 @@ import woowacourse.kanban.board.ui.taskcard.rememberTaskCardCreationState
 @Preview(showBackground = true)
 @Composable
 fun App() {
-    val authors = AuthorGroup(authors = listOf("다이노", "페임스"))
+    val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
     val taskCardCreationState = rememberTaskCardCreationState(
         title = "LazyColumn 컴포넌트 구현",
         content = "세로 스크롤 가능한 리스트 컴포넌트를 만들고 성능 최적화를 적용합니다.",
