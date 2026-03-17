@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.TaskState
-import woowacourse.kanban.board.ui.taskcard.CreateTaskCardModal
-import woowacourse.kanban.board.ui.taskcard.rememberTaskCardCreationState
+import woowacourse.kanban.board.ui.creation.CreateTaskCardModal
+import woowacourse.kanban.board.ui.creation.rememberTaskCardCreationState
 
 @Preview(showBackground = true)
 @Composable

@@ -1,4 +1,4 @@
-package woowacourse.kanban.board.ui.taskcard
+package woowacourse.kanban.board.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

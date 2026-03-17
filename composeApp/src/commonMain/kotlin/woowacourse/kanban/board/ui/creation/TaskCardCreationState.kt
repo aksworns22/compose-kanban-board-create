@@ -1,4 +1,4 @@
-package woowacourse.kanban.board.ui.taskcard
+package woowacourse.kanban.board.ui.creation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable

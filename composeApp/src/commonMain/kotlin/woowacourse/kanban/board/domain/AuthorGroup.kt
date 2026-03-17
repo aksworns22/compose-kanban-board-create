@@ -1,6 +1,7 @@
 package woowacourse.kanban.board.domain
 
-data class AuthorGroup(private val authors: List<Author>) {
+@JvmInline
+value class AuthorGroup(private val authors: List<Author>) {
     init {
         require(authors.isNotEmpty()) { "작업 담당자는 한 명 이상 있어야 합니다" }
     }

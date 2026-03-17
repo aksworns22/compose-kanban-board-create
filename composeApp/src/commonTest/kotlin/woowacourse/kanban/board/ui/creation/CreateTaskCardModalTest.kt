@@ -1,4 +1,4 @@
-package woowacourse.kanban.board.ui.taskcard
+package woowacourse.kanban.board.ui.creation
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
