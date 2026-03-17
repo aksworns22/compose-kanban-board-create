@@ -1,40 +1,24 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop (JVM).
+# 칸반 보드 생성 - 컴포넌트
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## 1단계 - 칸반 보드 생성(상품 목록) 구현할 기능 목록
 
-### Build and Run Android Application
+### 새 태스크 생성 모달 구현
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run Desktop (JVM) Application
-
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- [x] 제목을 필수로 입력 받는다.
+    - [x] 제목을 입력하지 않으면 에러 문구를 출력한다.
+- [x] 설명을 입력 받는다.
+- [x] 태그를 쉼표로 구분하여 입력 받는다.
+    - [x] 형식에 맞지 않으면 에러 문구를 출력한다. 
+        - 쉼표로 시작하거나 끝나지 않는다.
+        - 쉼표가 연달아 나올 수 없다.
+    - [x] 쉼표 사이의 공백은 무시된다.
+    - [x] 태그가 5자 이내가 아니라면 에러 문구를 출력한다.
+    - [x] 태그가 5개를 초과하면 에러 문구를 출력한다.
+- [x] 태스크 상태로 3가지(To Do, In Progress, Done)를 가진다.
+    - [x] 첫 번째 요소가 기본으로 선택된다.
+    - [x] 한 항목만 선택 가능하다.
+- [x] 담당자를 필수로 입력 받는다. 
+    - [x] 첫 번째 요소가 기본으로 선택된다.
+    - [x] 한 항목만 선택 가능하다.
+- [x] 모든 필드가 유효한 값이면 생성 버튼을 누를 수 있다.
+- [x] 피그마에 맞게 디자인을 적용한다.
