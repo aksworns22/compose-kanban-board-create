@@ -86,6 +86,7 @@ fun CreateTaskCardContent(taskCardCreationState: TaskCardCreationState, authors:
             onCreateClick = {
                 taskCardCreationState.updateCreateButtonClicked(true)
             },
+            onCloseClick = onClose,
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -268,18 +269,19 @@ private fun AuthorInputField(
 }
 
 @Composable
-private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: () -> Unit, onCloseClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Button(
-            onClick = {},
+            onClick = onCloseClick,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
                 contentColor = Color(0xFF364153),
             ),
+            modifier = Modifier.semantics { contentDescription = "취소 버튼" }
         ) {
             Text(text = "취소", textAlign = TextAlign.Center)
         }
