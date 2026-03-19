@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import woowacourse.kanban.board.domain.AuthorGroup
+import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.ui.creation.CreateTaskCardContent
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 
@@ -27,15 +28,17 @@ class KanbanBoardState(
     isDialogOpened: Boolean,
 ) {
     var isDialogOpened by mutableStateOf(isDialogOpened)
+    var taskGroup by mutableStateOf(mutableListOf<Task>())
 }
 
 @Composable
-fun CreateTaskCardScreen(authors: AuthorGroup, taskCardCreationState: TaskCardCreationState, onClose: () -> Unit, modifier: Modifier = Modifier) {
+fun CreateTaskCardScreen(authors: AuthorGroup, taskCardCreationState: TaskCardCreationState, onClose: () -> Unit, onCreate: (Task) -> Unit, modifier: Modifier = Modifier) {
     val taskCardCreationState = remember { taskCardCreationState }
     CreateTaskCardContent(
         taskCardCreationState = taskCardCreationState,
         authors = authors,
         onClose = onClose,
+        onCreate = onCreate,
         modifier = modifier.semantics { contentDescription = "새 태스크 생성" }.width(672.dp).background(Color.White).padding(16.dp),
     )
 }

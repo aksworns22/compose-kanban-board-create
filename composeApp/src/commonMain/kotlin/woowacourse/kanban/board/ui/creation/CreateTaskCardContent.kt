@@ -40,11 +40,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
+import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.TagGroup
+import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
+import woowacourse.kanban.board.domain.Title
 import woowacourse.kanban.board.ui.noRippleClickable
 
 @Composable
-fun CreateTaskCardContent(taskCardCreationState: TaskCardCreationState, authors: AuthorGroup, onClose: () -> Unit, modifier: Modifier = Modifier) {
+fun CreateTaskCardContent(
+    taskCardCreationState: TaskCardCreationState,
+    authors: AuthorGroup,
+    onClose: () -> Unit,
+    onCreate: (Task) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -84,6 +94,18 @@ fun CreateTaskCardContent(taskCardCreationState: TaskCardCreationState, authors:
         CreateTaskActionButtons(
             isNewTaskEnabled = taskCardCreationState.isNewTaskEnabled,
             onCreateClick = {
+                if (!taskCardCreationState.tagValidationState.isError && !taskCardCreationState.titleValidationState.isError) {
+                    val tags = taskCardCreationState.tags.split(",")
+                    onCreate(
+                        Task(
+                            title = Title(taskCardCreationState.title),
+                            content = taskCardCreationState.content,
+                            tags = if (tags.all { it.isNotEmpty() }) TagGroup(tags.map { Tag(it.trim()) }) else TagGroup(emptyList()),
+                            taskState = taskCardCreationState.selectedState,
+                            author = taskCardCreationState.selectedAuthor,
+                        ),
+                    )
+                }
                 taskCardCreationState.updateCreateButtonClicked(true)
             },
             onCloseClick = onClose,
@@ -108,7 +130,7 @@ private fun CreateTaskHeader(modifier: Modifier = Modifier, onClose: () -> Unit)
         Icon(
             imageVector = Icons.Default.Close,
             contentDescription = null,
-            Modifier.semantics { contentDescription = "x 버튼" }.noRippleClickable { onClose() }
+            Modifier.semantics { contentDescription = "x 버튼" }.noRippleClickable { onClose() },
         )
     }
 }
@@ -269,7 +291,12 @@ private fun AuthorInputField(
 }
 
 @Composable
-private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: () -> Unit, onCloseClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CreateTaskActionButtons(
+    isNewTaskEnabled: Boolean,
+    onCreateClick: () -> Unit,
+    onCloseClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.End,
@@ -281,7 +308,7 @@ private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: ()
                 containerColor = Color.Transparent,
                 contentColor = Color(0xFF364153),
             ),
-            modifier = Modifier.semantics { contentDescription = "취소 버튼" }
+            modifier = Modifier.semantics { contentDescription = "취소 버튼" },
         ) {
             Text(text = "취소", textAlign = TextAlign.Center)
         }
@@ -296,6 +323,7 @@ private fun CreateTaskActionButtons(isNewTaskEnabled: Boolean, onCreateClick: ()
                 disabledContainerColor = Color(0xFFA7A4BC),
                 disabledContentColor = Color.White,
             ),
+            modifier = Modifier.semantics { contentDescription = "새 태스크 생성 버튼" },
         ) {
             Text(text = "생성", textAlign = TextAlign.Center)
         }
@@ -453,6 +481,7 @@ private fun PreviewCreateTaskCardContent() {
         ),
         authors = authors,
         onClose = { },
+        onCreate = { },
         modifier = Modifier
             .background(Color.White).padding(16.dp),
     )

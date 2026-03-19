@@ -14,18 +14,20 @@ import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 @Composable
 fun App() {
     val kanbanBoardState = remember { KanbanBoardState(isDialogOpened = false) }
-    KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = {
-        val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
-        val kanbanBoardState = remember { KanbanBoardState(isDialogOpened = true) }
-        KanbanBoardContent(
-            kanbanBoardState = kanbanBoardState,
-            dialogScreen = {
-                CreateTaskCardScreen(
-                    authors = authors,
-                    taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
-                    onClose = { kanbanBoardState.isDialogOpened = false },
-                )
-            },
-        )
-    })
+    val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
+    KanbanBoardContent(
+        kanbanBoardState = kanbanBoardState,
+        dialogScreen = {
+            CreateTaskCardScreen(
+                authors = authors,
+                taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
+                onClose = { kanbanBoardState.isDialogOpened = false },
+                onCreate = { task ->
+                    kanbanBoardState.taskGroup.add(task)
+                    kanbanBoardState.isDialogOpened = false
+                    println(kanbanBoardState.taskGroup)
+                },
+            )
+        },
+    )
 }

@@ -1,9 +1,9 @@
 package woowacourse.kanban.board.ui.creation
 
-enum class TitleValidationState {
-    INIT,
-    VALID,
-    EMPTY_ERROR,
+enum class TitleValidationState(val isError: Boolean) {
+    INIT(true),
+    VALID(false),
+    EMPTY_ERROR(true),
 }
 
 enum class TagValidationState(val isError: Boolean) {
