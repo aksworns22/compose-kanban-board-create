@@ -30,4 +30,14 @@ class KanbanBoardTest {
         onNodeWithContentDescription("x 버튼").performClick()
         onNodeWithContentDescription("새 태스크 생성").assertDoesNotExist()
     }
+
+    @Test
+    fun `취소 버튼을 선택하면 태스크 생성 모달(다이어로그)가 사라진다`() = runComposeUiTest {
+        setContent {
+            val kanbanBoardState = remember { KanbanBoardState(isCreateTaskDialogDisplayed = true) }
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
+        }
+        onNodeWithContentDescription("취소 버튼").performClick()
+        onNodeWithContentDescription("새 태스크 생성").assertDoesNotExist()
+    }
 }
