@@ -2,7 +2,6 @@ package woowacourse.kanban.board.ui.creation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +46,24 @@ import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.Title
 import woowacourse.kanban.board.ui.noRippleClickable
+
+@Composable
+fun CreateTaskCardScreen(
+    authors: AuthorGroup,
+    taskCardCreationState: TaskCardCreationState,
+    onClose: () -> Unit,
+    onCreate: (Task) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val taskCardCreationState = remember { taskCardCreationState }
+    CreateTaskCardContent(
+        taskCardCreationState = taskCardCreationState,
+        authors = authors,
+        onClose = onClose,
+        onCreate = onCreate,
+        modifier = modifier.semantics { contentDescription = "새 태스크 생성" }.width(672.dp).background(Color.White).padding(16.dp),
+    )
+}
 
 @Composable
 fun CreateTaskCardContent(

@@ -6,6 +6,7 @@ import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
@@ -14,8 +15,8 @@ import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.Title
+import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
-import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class KanbanBoardTest {
@@ -96,7 +97,7 @@ class KanbanBoardTest {
                             content = "멋진 내용",
                             tags = "멋진, 태그",
                             selectedAuthor = authors.first(),
-                            isTitleInitialized = true
+                            isTitleInitialized = true,
                         ),
                         onClose = { kanbanBoardState.isDialogOpened = false },
                         onCreate = { task ->

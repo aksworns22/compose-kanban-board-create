@@ -5,9 +5,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
-import woowacourse.kanban.board.ui.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.KanbanBoardContent
 import woowacourse.kanban.board.ui.KanbanBoardState
+import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 
 @Preview(showBackground = true)
