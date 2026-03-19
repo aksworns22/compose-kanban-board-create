@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -40,14 +39,12 @@ import androidx.compose.ui.unit.sp
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.TaskState
-import woowacourse.kanban.board.ui.creation.TagValidationState
 import woowacourse.kanban.board.ui.noRippleClickable
 
 @Composable
-fun CreateTaskCardModal(taskCardCreationState: TaskCardCreationState, authors: AuthorGroup, modifier: Modifier = Modifier) {
-    rememberScrollState()
+fun CreateTaskCardContent(taskCardCreationState: TaskCardCreationState, authors: AuthorGroup, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         CreateTaskHeader(modifier = Modifier.fillMaxWidth())
@@ -439,9 +436,9 @@ private fun CustomTextField(
     widthDp = 672,
 )
 @Composable
-private fun PreviewCreateTaskCardModal() {
+private fun PreviewCreateTaskCardContent() {
     val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
-    CreateTaskCardModal(
+    CreateTaskCardContent(
         taskCardCreationState = TaskCardCreationState(
             title = "",
             content = "",
