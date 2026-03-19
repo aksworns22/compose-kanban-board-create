@@ -26,29 +26,30 @@ import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 
 @Stable
 class KanbanBoardState(
-    isNewTaskButtonClicked: Boolean,
+    isCreateTaskDialogDisplayed: Boolean,
 ) {
-    var isNewTaskButtonClicked by mutableStateOf(isNewTaskButtonClicked)
+    var isCreateTaskDialogDisplayed by mutableStateOf(isCreateTaskDialogDisplayed)
 }
 
 @Composable
 fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, modifier: Modifier = Modifier) {
     val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
-    if (kanbanBoardState.isNewTaskButtonClicked) {
+    if (kanbanBoardState.isCreateTaskDialogDisplayed) {
         Dialog(
-            onDismissRequest = { kanbanBoardState.isNewTaskButtonClicked = false },
+            onDismissRequest = { kanbanBoardState.isCreateTaskDialogDisplayed = false },
             properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false),
         ) {
             val taskCardCreationState = remember { TaskCardCreationState(selectedAuthor = authors.first()) }
             CreateTaskCardContent(
                 taskCardCreationState = taskCardCreationState,
                 authors = authors,
+                onClose = { kanbanBoardState.isCreateTaskDialogDisplayed = false },
                 modifier = modifier.semantics { contentDescription = "새 태스크 생성" }.width(672.dp).background(Color.White).padding(16.dp),
             )
         }
     }
 
-    Button(onClick = { kanbanBoardState.isNewTaskButtonClicked = true }, modifier = Modifier) {
+    Button(onClick = { kanbanBoardState.isCreateTaskDialogDisplayed = true }, modifier = Modifier) {
         Text("새 태스크 생성")
     }
 }
@@ -56,5 +57,5 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, modifier: Modifier = 
 @Composable
 @Preview
 fun KanbanBoardContentPreview() {
-    KanbanBoardContent(kanbanBoardState = KanbanBoardState(isNewTaskButtonClicked = true), modifier = Modifier.width(672.dp))
+    KanbanBoardContent(kanbanBoardState = KanbanBoardState(isCreateTaskDialogDisplayed = true), modifier = Modifier.width(672.dp))
 }

@@ -28,7 +28,7 @@ class CreateTaskCardModalTest {
             isTitleInitialized = true,
         )
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("제목을 입력해주세요.").assertExists()
@@ -45,7 +45,7 @@ class CreateTaskCardModalTest {
             selectedAuthor = authors.first(),
         )
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
@@ -63,7 +63,7 @@ class CreateTaskCardModalTest {
         )
 
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
@@ -81,7 +81,7 @@ class CreateTaskCardModalTest {
         )
 
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("태그 형식이 올바르지 않습니다.").assertExists()
@@ -99,7 +99,7 @@ class CreateTaskCardModalTest {
         )
 
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertExists()
@@ -116,7 +116,7 @@ class CreateTaskCardModalTest {
             selectedAuthor = authors.first(),
         )
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("태그는 5자 이내로 5개까지만 등록할 수 있습니다.").assertExists()
@@ -134,7 +134,7 @@ class CreateTaskCardModalTest {
         )
 
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("To Do").assertIsSelected()
@@ -151,7 +151,7 @@ class CreateTaskCardModalTest {
         )
 
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("To Do").performClick()
@@ -174,7 +174,7 @@ class CreateTaskCardModalTest {
         )
 
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText(authors.first().name).assertIsSelected()
@@ -191,7 +191,7 @@ class CreateTaskCardModalTest {
         )
 
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText(authors.first().name).performClick()
@@ -211,7 +211,7 @@ class CreateTaskCardModalTest {
             selectedAuthor = authors.first(),
         )
         setContent {
-            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, authors = authors)
+            CreateTaskCardContent(taskCardCreationState = taskCardCreationState, onClose = { }, authors = authors)
         }
 
         onNodeWithText("생성").assertIsEnabled()

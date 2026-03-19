@@ -2,6 +2,7 @@ package woowacourse.kanban.board.ui.creation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -42,12 +44,12 @@ import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.ui.noRippleClickable
 
 @Composable
-fun CreateTaskCardContent(taskCardCreationState: TaskCardCreationState, authors: AuthorGroup, modifier: Modifier = Modifier) {
+fun CreateTaskCardContent(taskCardCreationState: TaskCardCreationState, authors: AuthorGroup, onClose: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        CreateTaskHeader(modifier = Modifier.fillMaxWidth())
+        CreateTaskHeader(modifier = Modifier.fillMaxWidth(), onClose)
         HorizontalDivider()
         TitleInputField(
             titleProvider = { taskCardCreationState.title },
@@ -90,7 +92,7 @@ fun CreateTaskCardContent(taskCardCreationState: TaskCardCreationState, authors:
 }
 
 @Composable
-private fun CreateTaskHeader(modifier: Modifier = Modifier) {
+private fun CreateTaskHeader(modifier: Modifier = Modifier, onClose: () -> Unit) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -105,6 +107,7 @@ private fun CreateTaskHeader(modifier: Modifier = Modifier) {
         Icon(
             imageVector = Icons.Default.Close,
             contentDescription = null,
+            Modifier.semantics { contentDescription = "x 버튼" }.noRippleClickable { onClose() }
         )
     }
 }
@@ -447,6 +450,7 @@ private fun PreviewCreateTaskCardContent() {
             selectedAuthor = authors.first(),
         ),
         authors = authors,
+        onClose = { },
         modifier = Modifier
             .background(Color.White).padding(16.dp),
     )

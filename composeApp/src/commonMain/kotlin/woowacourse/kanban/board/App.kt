@@ -9,6 +9,6 @@ import woowacourse.kanban.board.ui.KanbanBoardState
 @Preview(showBackground = true)
 @Composable
 fun App() {
-    val kanbanBoardState = remember { KanbanBoardState(isNewTaskButtonClicked = false) }
+    val kanbanBoardState = remember { KanbanBoardState(isCreateTaskDialogDisplayed = false) }
     KanbanBoardContent(kanbanBoardState)
 }
