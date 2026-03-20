@@ -29,10 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import woowacourse.kanban.board.domain.Progress
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.TaskTransitionSnapshot
 import woowacourse.kanban.board.ui.taskcard.TaskCard
+import kotlin.math.round
 
 @Composable
 fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Composable () -> Unit, modifier: Modifier = Modifier) {
@@ -45,10 +47,16 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
         }
     }
 
+    val progress = kanbanBoardState.taskTransitionSnapshot.progress
     Column {
         KanbanBoardHeader(
+            progress = kanbanBoardState.taskTransitionSnapshot.progress,
             isDialogOpened = { kanbanBoardState.isDialogOpened = true },
             modifier = modifier.padding(top = 16.dp).fillMaxWidth(),
+        )
+        Text(
+            text = "완료율: ${round((progress.completed.toDouble() / progress.total.toDouble()) * 100).toInt()}% (${progress.completed}/${progress.total})",
+            modifier.semantics { contentDescription = "작업 진행률" },
         )
         SameStateTaskCardGroups(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot, modifier = modifier)
     }
@@ -108,7 +116,7 @@ private fun TaskCardGroupContent(taskGroup: TaskGroup, modifier: Modifier = Modi
 }
 
 @Composable
-private fun KanbanBoardHeader(isDialogOpened: () -> Unit, modifier: Modifier = Modifier) {
+private fun KanbanBoardHeader(progress: Progress, isDialogOpened: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
