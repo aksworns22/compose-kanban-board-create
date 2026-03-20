@@ -1,14 +1,17 @@
 package woowacourse.kanban.board.ui.board
 
 import androidx.compose.runtime.remember
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
@@ -312,5 +315,52 @@ class KanbanBoardTest {
         }
 
         onNodeWithContentDescription("작업 진행률").assertTextEquals("완료율: 33% (1/3)")
+    }
+
+    @Test
+    fun `계산된 완료율에 맞게 프로그래스바를 표시한다`() = runComposeUiTest {
+        val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
+        val kanbanBoardState = KanbanBoardState(
+            isDialogOpened = false,
+            taskTransitionSnapshot = TaskTransitionSnapshot(
+                mapOf(
+                    TaskState.TO_DO to TaskGroup(
+                        type = TaskState.TO_DO,
+                        tasks = listOf(
+                            Task(
+                                title = Title("해야할 일 제목 1"),
+                                content = "해야할 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                                taskState = TaskState.TO_DO,
+                                author = authors.first(),
+                            ),
+                        ),
+                    ),
+                    TaskState.IN_PROGRESS to TaskGroup(
+                        type = TaskState.IN_PROGRESS,
+                        tasks = emptyList(),
+                    ),
+                    TaskState.DONE to TaskGroup(
+                        type = TaskState.DONE,
+                        tasks = listOf(
+                            Task(
+                                title = Title("다한 일"),
+                                content = "다한 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+                                taskState = TaskState.DONE,
+                                author = authors.first(),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        setContent {
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
+        }
+
+        onNodeWithContentDescription("작업 진행률 프로그래스바")
+            .assertRangeInfoEquals(ProgressBarRangeInfo(current = 0.5f, range = 0.0f..1.0f))
     }
 }
