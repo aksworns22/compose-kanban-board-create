@@ -1,4 +1,4 @@
-package woowacourse.kanban.board.ui
+package woowacourse.kanban.board.ui.board
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,11 +16,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,63 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import woowacourse.kanban.board.domain.Task
+import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
+import woowacourse.kanban.board.domain.TaskTransitionSnapshot
 import woowacourse.kanban.board.ui.taskcard.TaskCard
-import java.util.function.IntFunction
-
-@Stable
-class KanbanBoardState(
-    isDialogOpened: Boolean,
-    taskTransitionSnapshot: TaskTransitionSnapshot = TaskTransitionSnapshot(
-        tasks = TaskState.entries.associateWith {
-            TaskGroup(
-                it,
-                emptyList(),
-            )
-        },
-    ),
-) {
-    var isDialogOpened by mutableStateOf(isDialogOpened)
-    var taskTransitionSnapshot by mutableStateOf(taskTransitionSnapshot)
-}
-
-@Immutable
-data class TaskTransitionSnapshot(val tasks: Map<TaskState, TaskGroup>) : Map<TaskState, TaskGroup> by tasks {
-    init {
-        TaskState.entries.forEach { taskState ->
-            require(tasks.containsKey(taskState)) { "$taskState 가 없습니다." }
-        }
-    }
-
-    fun transition(targetTask: Task, destinationTaskState: TaskState): TaskTransitionSnapshot {
-        val originTaskGroup = tasks.getValue(targetTask.taskState)
-        val destinationTaskGroup = tasks.getValue(destinationTaskState)
-        return TaskTransitionSnapshot(
-            tasks + (targetTask.taskState to originTaskGroup.remove(targetTask)) + (destinationTaskState to destinationTaskGroup.add(
-                targetTask.changeState(destinationTaskState),
-            )),
-        )
-    }
-}
-
-@Immutable
-data class TaskGroup(val type: TaskState, val tasks: List<Task>) : List<Task> by tasks {
-    init {
-        require(tasks.all { task -> task.taskState == type })
-    }
-
-    fun remove(task: Task): TaskGroup {
-        if (task !in tasks) return this
-        return TaskGroup(type, tasks - task)
-    }
-
-    fun add(task: Task): TaskGroup = TaskGroup(type, tasks + task)
-
-    override fun <T : Any?> toArray(p0: IntFunction<Array<out T?>?>): Array<out T?>? {
-        throw IllegalStateException("누구세요?(toArray)")
-    }
-}
 
 @Composable
 fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Composable () -> Unit, modifier: Modifier = Modifier) {
@@ -108,15 +50,12 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             isDialogOpened = { kanbanBoardState.isDialogOpened = true },
             modifier = modifier.padding(top = 16.dp).fillMaxWidth(),
         )
-        SameStateTaskCardGroupContent(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot, modifier = modifier)
+        SameStateTaskCardGroups(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot, modifier = modifier)
     }
 }
 
 @Composable
-private fun SameStateTaskCardGroupContent(
-    taskTransitionSnapshot: TaskTransitionSnapshot,
-    modifier: Modifier = Modifier,
-) {
+private fun SameStateTaskCardGroups(taskTransitionSnapshot: TaskTransitionSnapshot, modifier: Modifier = Modifier) {
     Row(modifier = modifier) {
         TaskState.entries.forEach { taskState ->
             val taskGroup = taskTransitionSnapshot.getValue(taskState)
@@ -130,7 +69,7 @@ private fun SameStateTaskCardGroupContent(
                         )
                         .padding(horizontal = 16.dp),
                 )
-                TaskCardColumn(
+                TaskCardGroupContent(
                     taskGroup,
                     modifier = Modifier.size(width = 320.dp, height = 700.dp).taskCardGroupBorder(taskState)
                         .padding(horizontal = 16.dp, vertical = 16.dp),
@@ -157,7 +96,7 @@ private fun TaskCardGroupHeader(taskGroup: TaskGroup, modifier: Modifier = Modif
 }
 
 @Composable
-private fun TaskCardColumn(taskGroup: TaskGroup, modifier: Modifier = Modifier) {
+private fun TaskCardGroupContent(taskGroup: TaskGroup, modifier: Modifier = Modifier) {
     val taskState = taskGroup.type
     Column(
         modifier = modifier.semantics { contentDescription = "${taskState.toDisplayName()} 목록" },
@@ -191,12 +130,11 @@ private fun KanbanBoardHeader(isDialogOpened: () -> Unit, modifier: Modifier = M
     }
 }
 
-private fun TaskState.toDisplayName(): String =
-    when (this) {
-        TaskState.TO_DO -> "To Do"
-        TaskState.IN_PROGRESS -> "In Progress"
-        TaskState.DONE -> "Done"
-    }
+private fun TaskState.toDisplayName(): String = when (this) {
+    TaskState.TO_DO -> "To Do"
+    TaskState.IN_PROGRESS -> "In Progress"
+    TaskState.DONE -> "Done"
+}
 
 private fun Modifier.taskCardGroupBorder(taskState: TaskState): Modifier {
     val borderColor = when (taskState) {

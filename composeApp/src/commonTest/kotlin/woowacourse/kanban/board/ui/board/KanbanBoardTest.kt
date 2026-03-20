@@ -1,4 +1,4 @@
-package woowacourse.kanban.board.ui
+package woowacourse.kanban.board.ui.board
 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -9,17 +9,19 @@ import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
+import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Tag
 import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.Task
+import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
+import woowacourse.kanban.board.domain.TaskTransitionSnapshot
 import woowacourse.kanban.board.domain.Title
 import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
-import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class KanbanBoardTest {
@@ -105,7 +107,10 @@ class KanbanBoardTest {
                         onClose = { kanbanBoardState.isDialogOpened = false },
                         onCreate = { task ->
                             kanbanBoardState.taskTransitionSnapshot =
-                                kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
+                                kanbanBoardState.taskTransitionSnapshot.transition(
+                                    task,
+                                    task.taskState,
+                                )
                             kanbanBoardState.isDialogOpened = false
                         },
                     )
