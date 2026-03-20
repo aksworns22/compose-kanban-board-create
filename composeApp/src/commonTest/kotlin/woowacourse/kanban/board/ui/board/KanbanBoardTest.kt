@@ -378,4 +378,19 @@ class KanbanBoardTest {
         onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
         onNodeWithText("새로운 태스크가 추가되었습니다.").isDisplayed()
     }
+
+    @Test
+    fun `스낵바의 x 버튼을 클릭하면 사라진다`() = runComposeUiTest {
+        val authors = AuthorGroup(authors = listOf(Author("디이노"), Author("페임스")))
+        val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
+        setContent {
+            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+        }
+
+        onNodeWithText("태스크 제목을 입력하세요").performTextInput("뷁르와 함께 멋진 태스크 만들기")
+        onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
+        onNodeWithText("새로운 태스크가 추가되었습니다.").isDisplayed()
+        onNodeWithContentDescription("닫기").performClick()
+        onNodeWithText("새로운 태스크가 추가되었습니다.").assertDoesNotExist()
+    }
 }
