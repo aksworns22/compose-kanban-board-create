@@ -15,8 +15,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,13 +35,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.launch
+import woowacourse.kanban.board.domain.Author
+import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Progress
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.TaskTransitionSnapshot
+import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
+import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 import woowacourse.kanban.board.ui.taskcard.TaskCard
 import kotlin.math.round
 
+@Composable
+fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) {
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = SnackbarHostState()
+    Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { paddingValues ->
+        KanbanBoardContent(
+            kanbanBoardState = kanbanBoardState,
+            dialogScreen = {
+                CreateTaskCardScreen(
+                    authors = authors,
+                    taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
+                    onClose = { kanbanBoardState.isDialogOpened = false },
+                    onCreate = { task ->
+                        kanbanBoardState.taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
+                        kanbanBoardState.isDialogOpened = false
+                        scope.launch {
+                            snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.")
+                        }
+                    },
+                    modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                )
+            },
+            modifier = Modifier.padding(horizontal = 16.dp).padding(paddingValues),
+        )
+    }
+}
 @Composable
 fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Composable () -> Unit, modifier: Modifier = Modifier) {
     if (kanbanBoardState.isDialogOpened) {
