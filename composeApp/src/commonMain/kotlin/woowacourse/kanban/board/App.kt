@@ -1,8 +1,11 @@
 package woowacourse.kanban.board
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.ui.KanbanBoardContent
@@ -23,11 +26,12 @@ fun App() {
                 taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
                 onClose = { kanbanBoardState.isDialogOpened = false },
                 onCreate = { task ->
-                    kanbanBoardState.taskGroup.add(task)
+                    kanbanBoardState.taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
                     kanbanBoardState.isDialogOpened = false
-                    println(kanbanBoardState.taskGroup)
+                    println(kanbanBoardState.taskTransitionSnapshot)
                 },
             )
         },
+        modifier = Modifier.padding(horizontal = 16.dp)
     )
 }

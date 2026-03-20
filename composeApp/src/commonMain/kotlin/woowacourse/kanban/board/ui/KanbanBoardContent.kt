@@ -1,21 +1,71 @@
 package woowacourse.kanban.board.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import woowacourse.kanban.board.domain.Task
+import woowacourse.kanban.board.domain.TaskState
 
 @Stable
-class KanbanBoardState(isDialogOpened: Boolean) {
+class KanbanBoardState(isDialogOpened: Boolean, taskTransitionSnapshot: TaskTransitionSnapshot = TaskTransitionSnapshot(
+    tasks = TaskState.entries.associateWith {
+        TaskGroup(
+            it,
+            emptyList(),
+        )
+    },
+)) {
     var isDialogOpened by mutableStateOf(isDialogOpened)
-    var taskGroup by mutableStateOf(mutableListOf<Task>())
+    var taskTransitionSnapshot by mutableStateOf(taskTransitionSnapshot)
+}
+
+@Immutable
+data class TaskTransitionSnapshot(val tasks: Map<TaskState, TaskGroup>) {
+    init {
+        TaskState.entries.forEach { taskState ->
+            require(tasks.containsKey(taskState)) { "$taskState 가 없습니다." }
+        }
+    }
+
+    fun transition(targetTask: Task, destinationTaskState: TaskState): TaskTransitionSnapshot {
+        val originTaskGroup = tasks.getValue(targetTask.taskState)
+        val destinationTaskGroup = tasks.getValue(destinationTaskState)
+        return TaskTransitionSnapshot(
+            tasks + (targetTask.taskState to originTaskGroup.remove(targetTask)) + (destinationTaskState to destinationTaskGroup.add(
+                targetTask.changeState(destinationTaskState),
+            )),
+        )
+    }
+}
+
+data class TaskGroup(val type: TaskState, val tasks: List<Task>) {
+    init {
+        require(tasks.all { task -> task.taskState == type })
+    }
+
+    fun remove(task: Task): TaskGroup {
+        if (task !in tasks) return this
+        return TaskGroup(type, tasks - task)
+    }
+
+    fun add(task: Task): TaskGroup = TaskGroup(type, tasks + task)
 }
 
 @Composable

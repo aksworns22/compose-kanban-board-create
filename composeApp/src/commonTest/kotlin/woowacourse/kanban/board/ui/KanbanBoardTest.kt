@@ -101,7 +101,8 @@ class KanbanBoardTest {
                         ),
                         onClose = { kanbanBoardState.isDialogOpened = false },
                         onCreate = { task ->
-                            kanbanBoardState.taskGroup.add(task)
+                            kanbanBoardState.taskTransitionSnapshot =
+                                kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
                             kanbanBoardState.isDialogOpened = false
                         },
                     )
@@ -109,15 +110,30 @@ class KanbanBoardTest {
             )
         }
         onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
-
-        assertThat(
-            kanbanBoardState.taskGroup.first(),
-        ).isEqualTo(
-            Task(
-                title = Title("멋진 제목"), content = "멋진 내용", tags = TagGroup(tags = listOf(Tag("멋진"), Tag("태그"))),
-                taskState = TaskState.TO_DO,
-                author = authors.first(),
-            ),
+        val expectedTaskTransitionSnapshot = TaskTransitionSnapshot(
+            tasks = mapOf(
+                TaskState.TO_DO to TaskGroup(
+                    type = TaskState.TO_DO,
+                    tasks = listOf(
+                        Task(
+                            title = Title("멋진 제목"),
+                            content = "멋진 내용",
+                            tags = TagGroup(tags = listOf(Tag("멋진"), Tag("태그"))),
+                            taskState = TaskState.TO_DO,
+                            author = authors.first(),
+                        ),
+                    ),
+                ),
+                TaskState.IN_PROGRESS to TaskGroup(
+                    type = TaskState.IN_PROGRESS,
+                    tasks = emptyList(),
+                ),
+                TaskState.DONE to TaskGroup(
+                    type = TaskState.DONE,
+                    tasks = emptyList(),
+                ),
+            )
         )
+        assertThat(kanbanBoardState.taskTransitionSnapshot).isEqualTo(expectedTaskTransitionSnapshot)
     }
 }
