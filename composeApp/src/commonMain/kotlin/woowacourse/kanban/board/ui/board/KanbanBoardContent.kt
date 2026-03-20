@@ -18,9 +18,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,9 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
-import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
-import woowacourse.kanban.board.domain.Progress
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.TaskTransitionSnapshot
@@ -63,7 +61,7 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
                         kanbanBoardState.taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
                         kanbanBoardState.isDialogOpened = false
                         scope.launch {
-                            snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.")
+                            snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.", withDismissAction = true)
                         }
                     },
                     modifier = Modifier.clip(RoundedCornerShape(10.dp)),
