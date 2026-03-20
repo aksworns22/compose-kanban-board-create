@@ -3,6 +3,7 @@ package woowacourse.kanban.board.ui.board
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onChildren
@@ -257,5 +258,59 @@ class KanbanBoardTest {
         onNodeWithContentDescription("To Do 태스크 가드 개수").assertTextEquals("2")
         onNodeWithContentDescription("In Progress 태스크 가드 개수").assertTextEquals("1")
         onNodeWithContentDescription("Done 태스크 가드 개수").assertTextEquals("0")
+    }
+
+    @Test
+    fun `완료율은 소수점 첫째자리에서 반올림한다`() = runComposeUiTest {
+        val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
+        val kanbanBoardState = KanbanBoardState(
+            isDialogOpened = false,
+            taskTransitionSnapshot = TaskTransitionSnapshot(
+                mapOf(
+                    TaskState.TO_DO to TaskGroup(
+                        type = TaskState.TO_DO,
+                        tasks = listOf(
+                            Task(
+                                title = Title("해야할 일 제목 1"),
+                                content = "해야할 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                                taskState = TaskState.TO_DO,
+                                author = authors.first(),
+                            ),
+                        ),
+                    ),
+                    TaskState.IN_PROGRESS to TaskGroup(
+                        type = TaskState.IN_PROGRESS,
+                        tasks = listOf(
+                            Task(
+                                title = Title("진행중인 일 제목 1"),
+                                content = "진행중인 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                                taskState = TaskState.IN_PROGRESS,
+                                author = authors.first(),
+                            ),
+                        ),
+                    ),
+                    TaskState.DONE to TaskGroup(
+                        type = TaskState.DONE,
+                        tasks = listOf(
+                            Task(
+                                title = Title("다한 일"),
+                                content = "다한 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+                                taskState = TaskState.DONE,
+                                author = authors.first(),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        setContent {
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
+        }
+
+        onNodeWithContentDescription("작업 진행률").assertTextEquals("완료율: 33% (1/3)")
     }
 }
