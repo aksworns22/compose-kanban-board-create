@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -57,7 +58,10 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             text = "완료율: ${round((progress.completed.toDouble() / progress.total.toDouble()) * 100).toInt()}% (${progress.completed}/${progress.total})",
             modifier.semantics { contentDescription = "작업 진행률" },
         )
-
+        LinearProgressIndicator(
+            progress = { progress.completed.toFloat() / progress.total.toFloat() },
+            modifier = Modifier.semantics { contentDescription="작업 진행률 프로그래스바" }.fillMaxWidth().background(Color.White),
+        )
         SameStateTaskCardGroups(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot, modifier = modifier)
     }
 }
