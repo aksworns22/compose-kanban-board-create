@@ -1,25 +1,14 @@
 package woowacourse.kanban.board.ui
 
 import androidx.compose.runtime.remember
-import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertContentDescriptionContains
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.assertValueEquals
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onSiblings
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
-import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
@@ -30,6 +19,7 @@ import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.Title
 import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
+import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class KanbanBoardTest {
@@ -201,9 +191,9 @@ class KanbanBoardTest {
             KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
         }
 
-        onNodeWithContentDescription("To do 목록")
+        onNodeWithContentDescription("To Do 목록")
             .onChildren()[0].assertContentDescriptionEquals("해야할 일 제목에 대한 태스크 카드")
-        onNodeWithContentDescription("In progress 목록")
+        onNodeWithContentDescription("In Progress 목록")
             .onChildren()[0].assertContentDescriptionEquals("진행중인 일 제목에 대한 태스크 카드")
         onNodeWithContentDescription("Done 목록")
             .onChildren()[0].assertContentDescriptionEquals("끝난 일 제목에 대한 태스크 카드")
@@ -259,8 +249,8 @@ class KanbanBoardTest {
             KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
         }
 
-        onNodeWithContentDescription("To do 태스크 가드 개수").assertTextEquals("2")
-        onNodeWithContentDescription("In progress 태스크 가드 개수").assertTextEquals("1")
+        onNodeWithContentDescription("To Do 태스크 가드 개수").assertTextEquals("2")
+        onNodeWithContentDescription("In Progress 태스크 가드 개수").assertTextEquals("1")
         onNodeWithContentDescription("Done 태스크 가드 개수").assertTextEquals("0")
     }
 }
