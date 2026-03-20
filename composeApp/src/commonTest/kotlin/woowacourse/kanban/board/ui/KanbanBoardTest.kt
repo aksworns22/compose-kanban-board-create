@@ -1,16 +1,21 @@
 package woowacourse.kanban.board.ui
 
 import androidx.compose.runtime.remember
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertContentDescriptionContains
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.assertValueEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onSiblings
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
@@ -202,5 +207,60 @@ class KanbanBoardTest {
             .onChildren()[0].assertContentDescriptionEquals("진행중인 일 제목에 대한 태스크 카드")
         onNodeWithContentDescription("Done 목록")
             .onChildren()[0].assertContentDescriptionEquals("끝난 일 제목에 대한 태스크 카드")
+    }
+
+    @Test
+    fun `각 상태에 따른 태스크 카드의 개수에 따라 올바른 숫자가 표시된다`() = runComposeUiTest {
+        val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
+        val kanbanBoardState = KanbanBoardState(
+            isDialogOpened = false,
+            taskTransitionSnapshot = TaskTransitionSnapshot(
+                mapOf(
+                    TaskState.TO_DO to TaskGroup(
+                        type = TaskState.TO_DO,
+                        tasks = listOf(
+                            Task(
+                                title = Title("해야할 일 제목 1"),
+                                content = "해야할 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                                taskState = TaskState.TO_DO,
+                                author = authors.first(),
+                            ),
+                            Task(
+                                title = Title("해야할 일 제목 2"),
+                                content = "해야할 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                                taskState = TaskState.TO_DO,
+                                author = authors.first(),
+                            ),
+                        ),
+                    ),
+                    TaskState.IN_PROGRESS to TaskGroup(
+                        type = TaskState.IN_PROGRESS,
+                        tasks = listOf(
+                            Task(
+                                title = Title("진행중인 일 제목 1"),
+                                content = "진행중인 일 내용",
+                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                                taskState = TaskState.IN_PROGRESS,
+                                author = authors.first(),
+                            ),
+                        ),
+                    ),
+                    TaskState.DONE to TaskGroup(
+                        type = TaskState.DONE,
+                        tasks = emptyList(),
+                    ),
+                ),
+            ),
+        )
+
+        setContent {
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
+        }
+
+        onNodeWithContentDescription("To do 태스크 가드 개수").assertTextEquals("2")
+        onNodeWithContentDescription("In progress 태스크 가드 개수").assertTextEquals("1")
+        onNodeWithContentDescription("Done 태스크 가드 개수").assertTextEquals("0")
     }
 }
