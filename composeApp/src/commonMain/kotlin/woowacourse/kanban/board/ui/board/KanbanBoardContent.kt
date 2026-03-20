@@ -50,7 +50,6 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
     val progress = kanbanBoardState.taskTransitionSnapshot.progress
     Column {
         KanbanBoardHeader(
-            progress = kanbanBoardState.taskTransitionSnapshot.progress,
             isDialogOpened = { kanbanBoardState.isDialogOpened = true },
             modifier = modifier.padding(top = 16.dp).fillMaxWidth(),
         )
@@ -58,6 +57,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             text = "완료율: ${round((progress.completed.toDouble() / progress.total.toDouble()) * 100).toInt()}% (${progress.completed}/${progress.total})",
             modifier.semantics { contentDescription = "작업 진행률" },
         )
+
         SameStateTaskCardGroups(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot, modifier = modifier)
     }
 }
@@ -116,7 +116,7 @@ private fun TaskCardGroupContent(taskGroup: TaskGroup, modifier: Modifier = Modi
 }
 
 @Composable
-private fun KanbanBoardHeader(progress: Progress, isDialogOpened: () -> Unit, modifier: Modifier = Modifier) {
+private fun KanbanBoardHeader(isDialogOpened: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
