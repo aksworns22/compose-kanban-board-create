@@ -18,6 +18,7 @@ import androidx.compose.ui.window.DialogProperties
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.ui.taskcard.TaskCard
+import java.util.function.IntFunction
 
 @Stable
 class KanbanBoardState(isDialogOpened: Boolean, taskTransitionSnapshot: TaskTransitionSnapshot = TaskTransitionSnapshot(
@@ -40,6 +41,8 @@ data class TaskTransitionSnapshot(val tasks: Map<TaskState, TaskGroup>) {
         }
     }
 
+    operator fun get(key: TaskState): TaskGroup = tasks.getValue(key)
+
     fun transition(targetTask: Task, destinationTaskState: TaskState): TaskTransitionSnapshot {
         val originTaskGroup = tasks.getValue(targetTask.taskState)
         val destinationTaskGroup = tasks.getValue(destinationTaskState)
@@ -51,7 +54,7 @@ data class TaskTransitionSnapshot(val tasks: Map<TaskState, TaskGroup>) {
     }
 }
 
-data class TaskGroup(val type: TaskState, val tasks: List<Task>) {
+data class TaskGroup(val type: TaskState, val tasks: List<Task>): List<Task> by tasks {
     init {
         require(tasks.all { task -> task.taskState == type })
     }
@@ -62,6 +65,10 @@ data class TaskGroup(val type: TaskState, val tasks: List<Task>) {
     }
 
     fun add(task: Task): TaskGroup = TaskGroup(type, tasks + task)
+
+    override fun <T : Any?> toArray(p0: IntFunction<Array<out T?>?>): Array<out T?>? {
+        throw IllegalStateException("누구세요?(toArray)")
+    }
 }
 
 @Composable
@@ -83,7 +90,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             Column {
                 Text("To do")
                 Column(modifier = Modifier.semantics { contentDescription = "To do 목록"}) {
-                    kanbanBoardState.taskTransitionSnapshot.tasks.getValue(TaskState.TO_DO).tasks.forEach { task ->
+                    kanbanBoardState.taskTransitionSnapshot[TaskState.TO_DO].forEach { task ->
                         TaskCard(task = task)
                     }
                 }
@@ -91,7 +98,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             Column {
                 Text("In Progress")
                 Column(modifier = Modifier.semantics { contentDescription = "In progress 목록"}) {
-                    kanbanBoardState.taskTransitionSnapshot.tasks.getValue(TaskState.IN_PROGRESS).tasks.forEach { task ->
+                    kanbanBoardState.taskTransitionSnapshot[TaskState.IN_PROGRESS].forEach { task ->
                         TaskCard(task = task)
                     }
                 }
@@ -99,7 +106,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             Column {
                 Text("Done")
                 Column(modifier = Modifier.semantics { contentDescription = "Done 목록"}) {
-                    kanbanBoardState.taskTransitionSnapshot.tasks.getValue(TaskState.DONE).tasks.forEach { task ->
+                    kanbanBoardState.taskTransitionSnapshot[TaskState.DONE].forEach { task ->
                         TaskCard(task = task)
                     }
                 }
