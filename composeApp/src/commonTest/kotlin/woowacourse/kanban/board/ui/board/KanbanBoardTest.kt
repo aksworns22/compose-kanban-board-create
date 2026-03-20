@@ -10,7 +10,9 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
@@ -362,5 +364,18 @@ class KanbanBoardTest {
 
         onNodeWithContentDescription("작업 진행률 프로그래스바")
             .assertRangeInfoEquals(ProgressBarRangeInfo(current = 0.5f, range = 0.0f..1.0f))
+    }
+
+    @Test
+    fun `새로운 태스크가 생성되었을 때 칸반보드에 스낵바를 표시한다`() = runComposeUiTest {
+        val authors = AuthorGroup(authors = listOf(Author("디이노"), Author("페임스")))
+        val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
+        setContent {
+            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+        }
+
+        onNodeWithText("태스크 제목을 입력하세요").performTextInput("뷁르와 함께 멋진 태스크 만들기")
+        onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
+        onNodeWithText("새로운 태스크가 추가되었습니다.").isDisplayed()
     }
 }
