@@ -10,6 +10,8 @@ data class TaskTransitionSnapshot(val tasks: Map<TaskState, TaskGroup>) : Map<Ta
         }
     }
 
+    val progress: Progress = Progress(total = tasks.values.sumOf { it.size }, completed = tasks.getValue(TaskState.DONE).size)
+
     fun transition(targetTask: Task, destinationTaskState: TaskState): TaskTransitionSnapshot {
         val originTaskGroup = tasks.getValue(targetTask.taskState)
         val destinationTaskGroup = tasks.getValue(destinationTaskState)
@@ -22,3 +24,5 @@ data class TaskTransitionSnapshot(val tasks: Map<TaskState, TaskGroup>) : Map<Ta
         )
     }
 }
+
+data class Progress(val total: Int, val completed: Int)
