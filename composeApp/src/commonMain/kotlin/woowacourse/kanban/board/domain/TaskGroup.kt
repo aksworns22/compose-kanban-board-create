@@ -6,7 +6,7 @@ import java.util.function.IntFunction
 @Immutable
 data class TaskGroup(val type: TaskState, val tasks: List<Task>) : List<Task> by tasks {
     init {
-        require(tasks.all { task -> task.taskState == type })
+        check(tasks.all { task -> task.taskState == type })
     }
 
     fun remove(task: Task): TaskGroup {
