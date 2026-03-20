@@ -89,6 +89,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
         Row {
             Column {
                 Text("To do")
+                Text("${kanbanBoardState.taskTransitionSnapshot[TaskState.TO_DO].size}", modifier = Modifier.semantics { contentDescription = "To do 태스크 가드 개수" })
                 Column(modifier = Modifier.semantics { contentDescription = "To do 목록"}) {
                     kanbanBoardState.taskTransitionSnapshot[TaskState.TO_DO].forEach { task ->
                         TaskCard(task = task)
@@ -97,6 +98,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             }
             Column {
                 Text("In Progress")
+                Text("${kanbanBoardState.taskTransitionSnapshot[TaskState.IN_PROGRESS].size}", modifier = Modifier.semantics { contentDescription = "In progress 태스크 가드 개수" })
                 Column(modifier = Modifier.semantics { contentDescription = "In progress 목록"}) {
                     kanbanBoardState.taskTransitionSnapshot[TaskState.IN_PROGRESS].forEach { task ->
                         TaskCard(task = task)
@@ -105,6 +107,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
             }
             Column {
                 Text("Done")
+                Text("${kanbanBoardState.taskTransitionSnapshot[TaskState.DONE].size}", modifier = Modifier.semantics { contentDescription = "Done 태스크 가드 개수" })
                 Column(modifier = Modifier.semantics { contentDescription = "Done 목록"}) {
                     kanbanBoardState.taskTransitionSnapshot[TaskState.DONE].forEach { task ->
                         TaskCard(task = task)
