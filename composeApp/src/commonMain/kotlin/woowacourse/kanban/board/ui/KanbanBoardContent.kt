@@ -1,10 +1,7 @@
 package woowacourse.kanban.board.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,15 +10,14 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskState
+import woowacourse.kanban.board.ui.taskcard.TaskCard
 
 @Stable
 class KanbanBoardState(isDialogOpened: Boolean, taskTransitionSnapshot: TaskTransitionSnapshot = TaskTransitionSnapshot(
@@ -79,7 +75,36 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
         }
     }
 
-    Button(onClick = { kanbanBoardState.isDialogOpened = true }, modifier = Modifier) {
-        Text("새 태스크 생성")
+    Column {
+        Button(onClick = { kanbanBoardState.isDialogOpened = true }, modifier = Modifier) {
+            Text("새 태스크 생성")
+        }
+        Row {
+            Column {
+                Text("To do")
+                Column(modifier = Modifier.semantics { contentDescription = "To do 목록"}) {
+                    kanbanBoardState.taskTransitionSnapshot.tasks.getValue(TaskState.TO_DO).tasks.forEach { task ->
+                        TaskCard(task = task)
+                    }
+                }
+            }
+            Column {
+                Text("In Progress")
+                Column(modifier = Modifier.semantics { contentDescription = "In progress 목록"}) {
+                    kanbanBoardState.taskTransitionSnapshot.tasks.getValue(TaskState.IN_PROGRESS).tasks.forEach { task ->
+                        TaskCard(task = task)
+                    }
+                }
+            }
+            Column {
+                Text("Done")
+                Column(modifier = Modifier.semantics { contentDescription = "Done 목록"}) {
+                    kanbanBoardState.taskTransitionSnapshot.tasks.getValue(TaskState.DONE).tasks.forEach { task ->
+                        TaskCard(task = task)
+                    }
+                }
+            }
+        }
     }
+
 }

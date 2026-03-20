@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -80,7 +82,7 @@ fun TaskCard(@PreviewParameter(TaskCardPreviewParameterProvider::class) task: Ta
             containerColor = Color.White,
         ),
         border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
-        modifier = Modifier.width(286.dp),
+        modifier = Modifier.semantics { contentDescription = "${task.title.value}에 대한 태스크 카드" }.width(286.dp),
     ) {
         Column(
             modifier = Modifier.padding(17.dp),
