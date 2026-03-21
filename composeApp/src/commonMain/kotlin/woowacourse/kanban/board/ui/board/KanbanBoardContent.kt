@@ -5,9 +5,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -37,6 +40,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import woowacourse.kanban.board.domain.AuthorGroup
+import woowacourse.kanban.board.domain.Progress
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.TaskTransitionSnapshot
@@ -71,6 +75,7 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
         )
     }
 }
+
 @Composable
 fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Composable () -> Unit, modifier: Modifier = Modifier) {
     if (kanbanBoardState.isDialogOpened) {
@@ -83,26 +88,36 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Compos
     }
 
     val progress = kanbanBoardState.taskTransitionSnapshot.progress
-    Column {
+    Column(modifier = modifier) {
         KanbanBoardHeader(
             isDialogOpened = { kanbanBoardState.isDialogOpened = true },
-            modifier = modifier.padding(top = 16.dp).fillMaxWidth(),
+            modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
         )
         Text(
-            text = "완료율: ${round((progress.completed.toDouble() / progress.total.toDouble()) * 100).toInt()}% (${progress.completed}/${progress.total})",
-            modifier.semantics { contentDescription = "작업 진행률" },
+            text = "완료율: ${progress.toPercentage()}% (${progress.completed}/${progress.total})",
+            fontSize = 14.sp,
+            color = Color(0xFF6A7282),
+            modifier = Modifier.semantics { contentDescription = "작업 진행률" },
         )
+        Spacer(modifier = Modifier.height(10.dp))
         LinearProgressIndicator(
-            progress = { progress.completed.toFloat() / progress.total.toFloat() },
-            modifier = Modifier.semantics { contentDescription="작업 진행률 프로그래스바" }.fillMaxWidth().background(Color.White),
+            progress = { progress.toRatio() },
+            color = Color(0xFF4F39F6),
+            modifier = Modifier.semantics { contentDescription = "작업 진행률 프로그래스바" }.fillMaxWidth().height(8.dp)
+                .background(Color(0xFFE5E7EB), shape = RoundedCornerShape(16.dp)),
+            drawStopIndicator = { },
         )
-        SameStateTaskCardGroups(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot, modifier = modifier)
+        Spacer(modifier = Modifier.height(20.dp))
+        SameStateTaskCardGroups(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot)
     }
 }
 
 @Composable
 private fun SameStateTaskCardGroups(taskTransitionSnapshot: TaskTransitionSnapshot, modifier: Modifier = Modifier) {
-    Row(modifier = modifier) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier,
+    ) {
         TaskState.entries.forEach { taskState ->
             val taskGroup = taskTransitionSnapshot.getValue(taskState)
             Column(modifier = Modifier.clip(RoundedCornerShape(10.dp)).taskCardGroupBackground(taskState)) {
@@ -118,7 +133,7 @@ private fun SameStateTaskCardGroups(taskTransitionSnapshot: TaskTransitionSnapsh
                 TaskCardGroupContent(
                     taskGroup,
                     modifier = Modifier.size(width = 320.dp, height = 700.dp).taskCardGroupBorder(taskState)
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                        .padding(vertical = 16.dp, horizontal = 16.dp),
                 )
             }
         }
@@ -136,7 +151,8 @@ private fun TaskCardGroupHeader(taskGroup: TaskGroup, modifier: Modifier = Modif
         Text(taskState.toDisplayName(), color = Color.White, fontWeight = FontWeight.W600, fontSize = 16.sp)
         Text(
             "${taskGroup.size}",
-            modifier = Modifier.semantics { contentDescription = "${taskState.toDisplayName()} 태스크 가드 개수" },
+            modifier = Modifier.semantics { contentDescription = "${taskState.toDisplayName()} 태스크 가드 개수" }
+                .background(Color.White, shape = RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 2.dp),
         )
     }
 }
@@ -144,10 +160,12 @@ private fun TaskCardGroupHeader(taskGroup: TaskGroup, modifier: Modifier = Modif
 @Composable
 private fun TaskCardGroupContent(taskGroup: TaskGroup, modifier: Modifier = Modifier) {
     val taskState = taskGroup.type
-    Column(
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.semantics { contentDescription = "${taskState.toDisplayName()} 목록" },
     ) {
-        taskGroup.forEach { task ->
+        items(count = taskGroup.size) { index ->
+            val task = taskGroup[index]
             TaskCard(task = task)
         }
     }
@@ -181,6 +199,10 @@ private fun TaskState.toDisplayName(): String = when (this) {
     TaskState.IN_PROGRESS -> "In Progress"
     TaskState.DONE -> "Done"
 }
+
+private fun Progress.toPercentage(): Int = round((this.toRatio()) * 100).toInt()
+
+private fun Progress.toRatio(): Float = this.completed.toFloat() / this.total.toFloat()
 
 private fun Modifier.taskCardGroupBorder(taskState: TaskState): Modifier {
     val borderColor = when (taskState) {
