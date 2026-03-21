@@ -15,12 +15,10 @@ data class TaskTransitionSnapshot(val tasks: Map<TaskState, TaskGroup>) : Map<Ta
     fun transition(targetTask: Task, destinationTaskState: TaskState): TaskTransitionSnapshot {
         val originTaskGroup = tasks.getValue(targetTask.taskState)
         val destinationTaskGroup = tasks.getValue(destinationTaskState)
+        val newOriginTaskGroup = (originTaskGroup.remove(targetTask))
+        val newDestinationTaskGroup = destinationTaskGroup.add(targetTask.changeState(destinationTaskState))
         return TaskTransitionSnapshot(
-            tasks + (targetTask.taskState to originTaskGroup.remove(targetTask)) + (
-                destinationTaskState to destinationTaskGroup.add(
-                    targetTask.changeState(destinationTaskState),
-                )
-                ),
+            tasks + (targetTask.taskState to newOriginTaskGroup) + (destinationTaskState to newDestinationTaskGroup),
         )
     }
 }

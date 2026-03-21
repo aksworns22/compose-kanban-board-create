@@ -21,7 +21,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlin.math.round
 import kotlinx.coroutines.launch
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Progress
@@ -47,7 +47,6 @@ import woowacourse.kanban.board.domain.TaskTransitionSnapshot
 import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 import woowacourse.kanban.board.ui.taskcard.TaskCard
-import kotlin.math.round
 
 @Composable
 fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) {
@@ -202,7 +201,7 @@ private fun TaskState.toDisplayName(): String = when (this) {
 
 private fun Progress.toPercentage(): Int = round((this.toRatio()) * 100).toInt()
 
-private fun Progress.toRatio(): Float = this.completed.toFloat() / this.total.toFloat()
+private fun Progress.toRatio(): Float = if (this.total != 0) this.completed.toFloat() / this.total.toFloat() else 0f
 
 private fun Modifier.taskCardGroupBorder(taskState: TaskState): Modifier {
     val borderColor = when (taskState) {

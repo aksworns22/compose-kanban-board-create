@@ -1,8 +1,8 @@
 package woowacourse.kanban.board.domain
 
+import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import kotlin.test.Test
 
 class TaskGroupTest {
     @Test
