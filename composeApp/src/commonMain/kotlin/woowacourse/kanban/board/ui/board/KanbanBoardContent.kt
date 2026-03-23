@@ -34,16 +34,21 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
+import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Progress
+import woowacourse.kanban.board.domain.Tag
+import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
+import woowacourse.kanban.board.domain.Title
 import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 import woowacourse.kanban.board.ui.taskcard.TaskCard
@@ -232,3 +237,78 @@ private fun Modifier.taskCardGroupBackground(taskState: TaskState, shape: Shape 
     }
     return this.background(backgroundColor, shape = shape)
 }
+
+@Preview(
+    widthDp = 1280,
+    heightDp = 920
+)
+@Composable
+fun KanbanBoardScreenPreview() {
+    val authors = previewAuthors()
+    val kanbanBoardState = KanbanBoardState(
+        isNewTaskDialogOpened = false,
+        taskGroup = previewTaskGroup()
+
+    )
+
+    KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+}
+
+@Preview(
+    widthDp = 1280,
+    heightDp = 920
+)
+@Composable
+private fun KanbanBoardScreenWithDialogPreview() {
+    val authors = previewAuthors()
+    val kanbanBoardState = KanbanBoardState(
+        isNewTaskDialogOpened = true,
+        taskGroup = previewTaskGroup(),
+    )
+
+    KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+}
+
+@Preview(
+    widthDp = 1280,
+    heightDp = 920,
+    showBackground = true
+)
+@Composable
+private fun SameStateTaskCardGroupsPreview() {
+    SameStateTaskCardGroups(taskGroup = previewTaskGroup())
+}
+
+private fun previewAuthors() = AuthorGroup(listOf(Author("다이노"), Author("페임스")))
+private fun previewTaskGroup(authors: AuthorGroup = previewAuthors()) = TaskGroup(
+    listOf(
+        Task(
+            title = Title("해야할 일 제목 1"),
+            content = "해야할 일 내용",
+            tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+            taskState = TaskState.TO_DO,
+            author = authors.first(),
+        ),
+        Task(
+            title = Title("진행중인 일 제목 1"),
+            content = "진행중인 일 내용",
+            tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+            taskState = TaskState.IN_PROGRESS,
+            author = authors.first(),
+        ),
+        Task(
+            title = Title("다한 일"),
+            content = "다한 일 내용",
+            tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+            taskState = TaskState.DONE,
+            author = authors.first(),
+        ),
+        Task(
+            title = Title("다한 것 같은 일"),
+            content = "해치웠나?",
+            tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+            taskState = TaskState.DONE,
+            author = authors.first(),
+        ),
+    ),
+)

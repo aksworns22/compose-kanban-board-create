@@ -29,7 +29,7 @@ import kotlin.test.Test
 class KanbanBoardTest {
     @Test
     fun `새 태스크 생성 버튼을 누르면 생성 모달(다이어로그)를 표시한다`() = runComposeUiTest {
-        val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
+        val kanbanBoardState = KanbanBoardState(isNewTaskDialogOpened = true)
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         setContent {
             KanbanBoardScreen(kanbanBoardState, authors)
@@ -41,7 +41,7 @@ class KanbanBoardTest {
     fun `x 버튼을 선택하면 태스크 생성 모달(다이어로그)가 사라진다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         setContent {
-            val kanbanBoardState = remember { KanbanBoardState(isDialogOpened = true) }
+            val kanbanBoardState = remember { KanbanBoardState(isNewTaskDialogOpened = true) }
             KanbanBoardScreen(kanbanBoardState, authors)
         }
         onNodeWithContentDescription("x 버튼").performClick()
@@ -52,7 +52,7 @@ class KanbanBoardTest {
     fun `취소 버튼을 선택하면 태스크 생성 모달(다이어로그)가 사라진다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         setContent {
-            val kanbanBoardState = remember { KanbanBoardState(isDialogOpened = true) }
+            val kanbanBoardState = remember { KanbanBoardState(isNewTaskDialogOpened = true) }
             KanbanBoardScreen(kanbanBoardState, authors)
         }
         onNodeWithContentDescription("취소 버튼").performClick()
@@ -62,7 +62,7 @@ class KanbanBoardTest {
     @Test
     fun `제목이 존재하고 태그의 형식, 상태가 올바르면 새로운 태스크를 생성한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("디이노"), Author("페임스")))
-        val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
+        val kanbanBoardState = KanbanBoardState(isNewTaskDialogOpened = true)
         setContent {
             KanbanBoardScreen(kanbanBoardState, authors)
         }
@@ -88,7 +88,7 @@ class KanbanBoardTest {
     fun `생성된 태스크를 각 태스크 상태에 맞게 표시한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
-            isDialogOpened = false,
+            isNewTaskDialogOpened = false,
             taskGroup = TaskGroup(
                 listOf(
                     Task(
@@ -132,7 +132,7 @@ class KanbanBoardTest {
     fun `각 상태에 따른 태스크 카드의 개수에 따라 올바른 숫자가 표시된다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
-            isDialogOpened = false,
+            isNewTaskDialogOpened = false,
             taskGroup = TaskGroup(
                 tasks = listOf(
                     Task(
@@ -174,7 +174,7 @@ class KanbanBoardTest {
     fun `완료율은 소수점 첫째자리에서 반올림한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
-            isDialogOpened = false,
+            isNewTaskDialogOpened = false,
             taskGroup = TaskGroup(
                 listOf(
                     Task(
@@ -213,7 +213,7 @@ class KanbanBoardTest {
     fun `계산된 완료율에 맞게 프로그래스바를 표시한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
-            isDialogOpened = false,
+            isNewTaskDialogOpened = false,
             taskGroup = TaskGroup(
                 listOf(
                     Task(
@@ -245,7 +245,7 @@ class KanbanBoardTest {
     @Test
     fun `새로운 태스크가 생성되었을 때 칸반보드에 스낵바를 표시한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("디이노"), Author("페임스")))
-        val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
+        val kanbanBoardState = KanbanBoardState(isNewTaskDialogOpened = true)
         setContent {
             KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
         }
@@ -258,7 +258,7 @@ class KanbanBoardTest {
     @Test
     fun `스낵바의 x 버튼을 클릭하면 사라진다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("디이노"), Author("페임스")))
-        val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
+        val kanbanBoardState = KanbanBoardState(isNewTaskDialogOpened = true)
         setContent {
             KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
         }

@@ -11,7 +11,7 @@ import woowacourse.kanban.board.ui.board.KanbanBoardState
 @Preview(showBackground = true)
 @Composable
 fun App() {
-    val kanbanBoardState = remember { KanbanBoardState(isDialogOpened = false) }
+    val kanbanBoardState = remember { KanbanBoardState(isNewTaskDialogOpened = false) }
     val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
     KanbanBoardScreen(kanbanBoardState, authors)
 }

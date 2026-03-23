@@ -9,20 +9,20 @@ import woowacourse.kanban.board.domain.TaskGroup
 
 @Stable
 class KanbanBoardState(
-    isDialogOpened: Boolean,
+    isNewTaskDialogOpened: Boolean,
     taskGroup: TaskGroup = TaskGroup(tasks = emptyList())
 ) {
-    var isNewTaskDialogOpened by mutableStateOf(isDialogOpened)
+    var isNewTaskDialogOpened by mutableStateOf(isNewTaskDialogOpened)
         private set
     var taskGroup by mutableStateOf(taskGroup)
         private set
 
     fun openNewTaskDialog() {
-        isNewTaskDialogOpened = true
+        this@KanbanBoardState.isNewTaskDialogOpened = true
     }
 
     fun closeNewTaskDialog() {
-        isNewTaskDialogOpened = false
+        this@KanbanBoardState.isNewTaskDialogOpened = false
     }
 
     fun addNewTask(task: Task) {
