@@ -29,12 +29,13 @@ import kotlin.test.Test
 class KanbanBoardTest {
     @Test
     fun `새 태스크 생성 버튼을 누르면 생성 모달(다이어로그)를 표시한다`() = runComposeUiTest {
-        val kanbanBoardState = KanbanBoardState(isNewTaskDialogOpened = true)
+        val kanbanBoardState = KanbanBoardState(isNewTaskDialogOpened = false)
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         setContent {
             KanbanBoardScreen(kanbanBoardState, authors)
         }
-        onNodeWithContentDescription("새 태스크 생성").isDisplayed()
+        onNodeWithContentDescription("새 태스크 추가 버튼").performClick()
+        onNodeWithContentDescription("새 태스크 생성 다이어로그").assertIsDisplayed()
     }
 
     @Test
@@ -45,7 +46,7 @@ class KanbanBoardTest {
             KanbanBoardScreen(kanbanBoardState, authors)
         }
         onNodeWithContentDescription("x 버튼").performClick()
-        onNodeWithContentDescription("새 태스크 생성").assertDoesNotExist()
+        onNodeWithContentDescription("새 태스크 생성 다이어로그").assertDoesNotExist()
     }
 
     @Test
@@ -56,7 +57,7 @@ class KanbanBoardTest {
             KanbanBoardScreen(kanbanBoardState, authors)
         }
         onNodeWithContentDescription("취소 버튼").performClick()
-        onNodeWithContentDescription("새 태스크 생성").assertDoesNotExist()
+        onNodeWithContentDescription("새 태스크 생성 다이어로그").assertDoesNotExist()
     }
 
     @Test
@@ -87,37 +88,34 @@ class KanbanBoardTest {
     @Test
     fun `생성된 태스크를 각 태스크 상태에 맞게 표시한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
-        val kanbanBoardState = KanbanBoardState(
-            isNewTaskDialogOpened = false,
-            taskGroup = TaskGroup(
-                listOf(
-                    Task(
-                        title = Title("해야할 일 제목"),
-                        content = "해야할 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                        taskState = TaskState.TO_DO,
-                        author = authors.first(),
-                    ),
-                    Task(
-                        title = Title("진행중인 일 제목"),
-                        content = "진행중인 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
-                        taskState = TaskState.IN_PROGRESS,
-                        author = authors.first(),
-                    ),
-                    Task(
-                        title = Title("끝난 일 제목"),
-                        content = "끝난 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("끝난일"))),
-                        taskState = TaskState.DONE,
-                        author = authors.first(),
-                    ),
+        val taskGroup = TaskGroup(
+            listOf(
+                Task(
+                    title = Title("해야할 일 제목"),
+                    content = "해야할 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                    taskState = TaskState.TO_DO,
+                    author = authors.first(),
+                ),
+                Task(
+                    title = Title("진행중인 일 제목"),
+                    content = "진행중인 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                    taskState = TaskState.IN_PROGRESS,
+                    author = authors.first(),
+                ),
+                Task(
+                    title = Title("끝난 일 제목"),
+                    content = "끝난 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("끝난일"))),
+                    taskState = TaskState.DONE,
+                    author = authors.first(),
                 ),
             ),
         )
 
         setContent {
-            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+            KanbanBoardContent(taskGroup = taskGroup, onNewTaskButtonClick = { })
         }
 
         onNodeWithContentDescription("To Do 목록")
@@ -131,38 +129,34 @@ class KanbanBoardTest {
     @Test
     fun `각 상태에 따른 태스크 카드의 개수에 따라 올바른 숫자가 표시된다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
-        val kanbanBoardState = KanbanBoardState(
-            isNewTaskDialogOpened = false,
-            taskGroup = TaskGroup(
-                tasks = listOf(
-                    Task(
-                        title = Title("해야할 일 제목 1"),
-                        content = "해야할 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                        taskState = TaskState.TO_DO,
-                        author = authors.first(),
-                    ),
-                    Task(
-                        title = Title("해야할 일 제목 2"),
-                        content = "해야할 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                        taskState = TaskState.TO_DO,
-                        author = authors.first(),
-                    ),
-                    Task(
-                        title = Title("진행중인 일 제목 1"),
-                        content = "진행중인 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
-                        taskState = TaskState.IN_PROGRESS,
-                        author = authors.first(),
-                    ),
+        val taskGroup = TaskGroup(
+            tasks = listOf(
+                Task(
+                    title = Title("해야할 일 제목 1"),
+                    content = "해야할 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                    taskState = TaskState.TO_DO,
+                    author = authors.first(),
+                ),
+                Task(
+                    title = Title("해야할 일 제목 2"),
+                    content = "해야할 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                    taskState = TaskState.TO_DO,
+                    author = authors.first(),
+                ),
+                Task(
+                    title = Title("진행중인 일 제목 1"),
+                    content = "진행중인 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                    taskState = TaskState.IN_PROGRESS,
+                    author = authors.first(),
                 ),
             ),
         )
 
-
         setContent {
-            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+            KanbanBoardContent(taskGroup = taskGroup, onNewTaskButtonClick = { })
         }
 
         onNodeWithContentDescription("To Do 태스크 가드 개수").assertTextEquals("2")
@@ -173,37 +167,34 @@ class KanbanBoardTest {
     @Test
     fun `완료율은 소수점 첫째자리에서 반올림한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
-        val kanbanBoardState = KanbanBoardState(
-            isNewTaskDialogOpened = false,
-            taskGroup = TaskGroup(
-                listOf(
-                    Task(
-                        title = Title("해야할 일 제목 1"),
-                        content = "해야할 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                        taskState = TaskState.TO_DO,
-                        author = authors.first(),
-                    ),
-                    Task(
-                        title = Title("진행중인 일 제목 1"),
-                        content = "진행중인 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
-                        taskState = TaskState.IN_PROGRESS,
-                        author = authors.first(),
-                    ),
-                    Task(
-                        title = Title("다한 일"),
-                        content = "다한 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
-                        taskState = TaskState.DONE,
-                        author = authors.first(),
-                    ),
+        val taskGroup = TaskGroup(
+            listOf(
+                Task(
+                    title = Title("해야할 일 제목 1"),
+                    content = "해야할 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                    taskState = TaskState.TO_DO,
+                    author = authors.first(),
+                ),
+                Task(
+                    title = Title("진행중인 일 제목 1"),
+                    content = "진행중인 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                    taskState = TaskState.IN_PROGRESS,
+                    author = authors.first(),
+                ),
+                Task(
+                    title = Title("다한 일"),
+                    content = "다한 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+                    taskState = TaskState.DONE,
+                    author = authors.first(),
                 ),
             ),
         )
 
         setContent {
-            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+            KanbanBoardContent(taskGroup = taskGroup, onNewTaskButtonClick = { })
         }
 
         onNodeWithContentDescription("작업 진행률").assertTextEquals("완료율: 33% (1/3)")
@@ -212,30 +203,27 @@ class KanbanBoardTest {
     @Test
     fun `계산된 완료율에 맞게 프로그래스바를 표시한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
-        val kanbanBoardState = KanbanBoardState(
-            isNewTaskDialogOpened = false,
-            taskGroup = TaskGroup(
-                listOf(
-                    Task(
-                        title = Title("해야할 일 제목 1"),
-                        content = "해야할 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                        taskState = TaskState.TO_DO,
-                        author = authors.first(),
-                    ),
-                    Task(
-                        title = Title("다한 일"),
-                        content = "다한 일 내용",
-                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
-                        taskState = TaskState.DONE,
-                        author = authors.first(),
-                    ),
+        val taskGroup = TaskGroup(
+            listOf(
+                Task(
+                    title = Title("해야할 일 제목 1"),
+                    content = "해야할 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                    taskState = TaskState.TO_DO,
+                    author = authors.first(),
+                ),
+                Task(
+                    title = Title("다한 일"),
+                    content = "다한 일 내용",
+                    tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+                    taskState = TaskState.DONE,
+                    author = authors.first(),
                 ),
             ),
         )
 
         setContent {
-            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
+            KanbanBoardContent(taskGroup = taskGroup, onNewTaskButtonClick = { })
         }
 
         onNodeWithContentDescription("작업 진행률 프로그래스바")

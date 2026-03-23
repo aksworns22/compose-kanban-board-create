@@ -75,7 +75,7 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
                             snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.", withDismissAction = true)
                         }
                     },
-                    modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                    modifier = Modifier.semantics { contentDescription = "새 태스크 생성 다이어로그" }.clip(RoundedCornerShape(10.dp)),
                 )
             }
         }
@@ -190,6 +190,7 @@ private fun KanbanBoardHeader(onNewTaskButtonClick: () -> Unit, modifier: Modifi
                 disabledContainerColor = Color(0xFFA7A4BC),
             ),
             shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.semantics { contentDescription = "새 태스크 추가 버튼" },
         ) {
             Icon(Icons.Default.Add, contentDescription = "새 태스크 생성 아이콘")
             Text("새 태스크 생성")

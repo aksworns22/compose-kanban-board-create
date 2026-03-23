@@ -61,7 +61,7 @@ fun CreateTaskCardScreen(
         authors = authors,
         onClose = onClose,
         onCreate = onCreate,
-        modifier = modifier.semantics { contentDescription = "새 태스크 생성" }.width(672.dp).background(Color.White).padding(16.dp),
+        modifier = modifier.width(672.dp).background(Color.White).padding(16.dp),
     )
 }
 
