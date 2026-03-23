@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,11 +25,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.coroutines.launch
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Progress
@@ -133,7 +129,7 @@ private fun SameStateTaskCardGroups(taskGroup: TaskGroup, modifier: Modifier = M
             Column(modifier = Modifier.clip(RoundedCornerShape(10.dp)).taskCardGroupBackground(taskState)) {
                 TaskCardGroupHeader(
                     taskState = taskState,
-                    taskGroup = taskGroup,
+                    tasks = taskGroup,
                     modifier = Modifier.size(width = 320.dp, height = 40.dp)
                         .taskCardGroupHeaderBackground(
                             taskState = taskState,
@@ -153,7 +149,7 @@ private fun SameStateTaskCardGroups(taskGroup: TaskGroup, modifier: Modifier = M
 }
 
 @Composable
-private fun TaskCardGroupHeader(taskState: TaskState, taskGroup: List<Task>, modifier: Modifier = Modifier) {
+private fun TaskCardGroupHeader(taskState: TaskState, tasks: List<Task>, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -161,7 +157,7 @@ private fun TaskCardGroupHeader(taskState: TaskState, taskGroup: List<Task>, mod
     ) {
         Text(taskState.toDisplayName(), color = Color.White, fontWeight = FontWeight.W600, fontSize = 16.sp)
         Text(
-            "${taskGroup.size}",
+            "${tasks.size}",
             modifier = Modifier.semantics { contentDescription = "${taskState.toDisplayName()} 태스크 가드 개수" }
                 .background(Color.White, shape = RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 2.dp),
         )
@@ -169,14 +165,13 @@ private fun TaskCardGroupHeader(taskState: TaskState, taskGroup: List<Task>, mod
 }
 
 @Composable
-private fun TaskCardGroupContent(taskState: TaskState, taskGroup: List<Task>, modifier: Modifier = Modifier) {
+private fun TaskCardGroupContent(taskState: TaskState, tasks: List<Task>, modifier: Modifier = Modifier) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.semantics { contentDescription = "${taskState.toDisplayName()} 목록" },
     ) {
-        items(count = taskGroup.size) { index ->
-            val task = taskGroup[index]
-            TaskCard(task = task)
+        items(items = tasks, key = { it } ) {
+            TaskCard(task = it)
         }
     }
 }
@@ -289,7 +284,7 @@ private fun SameStateTaskCardGroupsPreview() {
 
 private fun previewAuthors() = AuthorGroup(listOf(Author("다이노"), Author("페임스")))
 private fun previewTaskGroup(authors: AuthorGroup = previewAuthors()) = TaskGroup(
-    listOf(
+    setOf(
         Task(
             title = Title("해야할 일 제목 1"),
             content = "해야할 일 내용",

@@ -12,7 +12,7 @@ import woowacourse.kanban.board.domain.TaskGroup
 @Stable
 class KanbanBoardState(
     isNewTaskDialogOpened: Boolean,
-    taskGroup: TaskGroup = TaskGroup(tasks = emptyList()),
+    taskGroup: TaskGroup = TaskGroup(tasks = emptySet()),
 ) {
     var isNewTaskDialogOpened by mutableStateOf(isNewTaskDialogOpened)
         private set
