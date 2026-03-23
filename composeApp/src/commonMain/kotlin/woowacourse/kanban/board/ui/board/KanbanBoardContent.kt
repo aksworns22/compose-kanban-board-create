@@ -54,18 +54,18 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { paddingValues ->
-        if (kanbanBoardState.isDialogOpened) {
+        if (kanbanBoardState.isNewTaskDialogOpened) {
             Dialog(
-                onDismissRequest = { kanbanBoardState.isDialogOpened = false },
+                onDismissRequest = { kanbanBoardState.closeNewTaskDialog() },
                 properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false),
             ) {
                 CreateTaskCardScreen(
                     authors = authors,
                     taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
-                    onClose = { kanbanBoardState.isDialogOpened = false },
+                    onClose = { kanbanBoardState.closeNewTaskDialog() },
                     onCreate = { task ->
-                        kanbanBoardState.taskGroup = kanbanBoardState.taskGroup.add(task)
-                        kanbanBoardState.isDialogOpened = false
+                        kanbanBoardState.addNewTask(task)
+                        kanbanBoardState.closeNewTaskDialog()
                         scope.launch {
                             snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.", withDismissAction = true)
                         }
@@ -76,18 +76,19 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
         }
 
         KanbanBoardContent(
-            kanbanBoardState = kanbanBoardState,
+            taskGroup = kanbanBoardState.taskGroup,
+            onNewTaskButtonClick = { kanbanBoardState.openNewTaskDialog() },
             modifier = Modifier.padding(horizontal = 16.dp).padding(paddingValues),
         )
     }
 }
 
 @Composable
-fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, modifier: Modifier = Modifier) {
-    val progress = Progress.of(kanbanBoardState.taskGroup)
+fun KanbanBoardContent(taskGroup: TaskGroup, onNewTaskButtonClick: () -> Unit, modifier: Modifier = Modifier) {
+    val progress = Progress.of(taskGroup)
     Column(modifier = modifier) {
         KanbanBoardHeader(
-            isDialogOpened = { kanbanBoardState.isDialogOpened = true },
+            onNewTaskButtonClick = onNewTaskButtonClick,
             modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
         )
         Text(
@@ -105,7 +106,7 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, modifier: Modifier = 
             drawStopIndicator = { },
         )
         Spacer(modifier = Modifier.height(20.dp))
-        SameStateTaskCardGroups(kanbanBoardState.taskGroup)
+        SameStateTaskCardGroups(taskGroup)
     }
 }
 
@@ -169,7 +170,7 @@ private fun TaskCardGroupContent(taskState: TaskState, taskGroup: List<Task>, mo
 }
 
 @Composable
-private fun KanbanBoardHeader(isDialogOpened: () -> Unit, modifier: Modifier = Modifier) {
+private fun KanbanBoardHeader(onNewTaskButtonClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -177,7 +178,7 @@ private fun KanbanBoardHeader(isDialogOpened: () -> Unit, modifier: Modifier = M
     ) {
         Text(text = "Compose Desktop 칸반 보드", fontSize = 24.sp, color = Color(0xFF101828))
         Button(
-            onClick = isDialogOpened,
+            onClick = onNewTaskButtonClick,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF4F39F6),
                 contentColor = Color.White,

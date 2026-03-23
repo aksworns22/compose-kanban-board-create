@@ -117,7 +117,7 @@ class KanbanBoardTest {
         )
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
+            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
         }
 
         onNodeWithContentDescription("To Do 목록")
@@ -162,7 +162,7 @@ class KanbanBoardTest {
 
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
+            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
         }
 
         onNodeWithContentDescription("To Do 태스크 가드 개수").assertTextEquals("2")
@@ -203,7 +203,7 @@ class KanbanBoardTest {
         )
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
+            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
         }
 
         onNodeWithContentDescription("작업 진행률").assertTextEquals("완료율: 33% (1/3)")
@@ -235,7 +235,7 @@ class KanbanBoardTest {
         )
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
+            KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
         }
 
         onNodeWithContentDescription("작업 진행률 프로그래스바")
