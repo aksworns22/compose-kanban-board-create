@@ -7,7 +7,6 @@ import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -253,7 +252,7 @@ class KanbanBoardTest {
 
         onNodeWithText("태스크 제목을 입력하세요").performTextInput("뷁르와 함께 멋진 태스크 만들기")
         onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
-        onNodeWithText("새로운 태스크가 추가되었습니다.").isDisplayed()
+        onNodeWithText("새로운 태스크가 추가되었습니다.").assertIsDisplayed()
         onNodeWithContentDescription("닫기").performClick()
         onNodeWithText("새로운 태스크가 추가되었습니다.").assertDoesNotExist()
     }
