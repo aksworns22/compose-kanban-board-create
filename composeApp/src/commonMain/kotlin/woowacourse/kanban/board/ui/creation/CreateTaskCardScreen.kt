@@ -171,6 +171,7 @@ private fun TitleInputField(
                 placeholder = "태스크 제목을 입력하세요",
                 singleLine = true,
                 modifier = Modifier
+                    .semantics { contentDescription = "태스크 제목 입력 텍스트 필드" }
                     .fillMaxWidth()
                     .border(
                         1.dp,
