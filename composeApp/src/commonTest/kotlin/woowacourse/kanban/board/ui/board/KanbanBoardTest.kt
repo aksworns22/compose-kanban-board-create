@@ -14,7 +14,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
-import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
@@ -23,10 +22,8 @@ import woowacourse.kanban.board.domain.TagGroup
 import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
-import woowacourse.kanban.board.domain.TaskTransitionSnapshot
 import woowacourse.kanban.board.domain.Title
-import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
-import woowacourse.kanban.board.ui.creation.TaskCardCreationState
+import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class KanbanBoardTest {
@@ -72,31 +69,19 @@ class KanbanBoardTest {
         onNodeWithText("태스크 제목을 입력하세요").performTextInput("멋진 제목")
         onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
 
-        val expectedTaskTransitionSnapshot = TaskTransitionSnapshot(
-            tasks = mapOf(
-                TaskState.TO_DO to TaskGroup(
-                    type = TaskState.TO_DO,
-                    tasks = listOf(
-                        Task(
-                            title = Title("멋진 제목"),
-                            content = "",
-                            tags = TagGroup(tags = emptyList()),
-                            taskState = TaskState.TO_DO,
-                            author = authors.first(),
-                        ),
-                    ),
-                ),
-                TaskState.IN_PROGRESS to TaskGroup(
-                    type = TaskState.IN_PROGRESS,
-                    tasks = emptyList(),
-                ),
-                TaskState.DONE to TaskGroup(
-                    type = TaskState.DONE,
-                    tasks = emptyList(),
+        val expectedTaskGroup = TaskGroup(
+            tasks = listOf(
+                Task(
+                    title = Title("멋진 제목"),
+                    content = "",
+                    tags = TagGroup(tags = emptyList()),
+                    taskState = TaskState.TO_DO,
+                    author = authors.first(),
                 ),
             ),
         )
-        assertThat(kanbanBoardState.taskTransitionSnapshot).isEqualTo(expectedTaskTransitionSnapshot)
+
+        assertThat(kanbanBoardState.taskGroup).isEqualTo(expectedTaskGroup)
     }
 
     @Test
@@ -104,43 +89,28 @@ class KanbanBoardTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
             isDialogOpened = false,
-            taskTransitionSnapshot = TaskTransitionSnapshot(
-                mapOf(
-                    TaskState.TO_DO to TaskGroup(
-                        type = TaskState.TO_DO,
-                        tasks = listOf(
-                            Task(
-                                title = Title("해야할 일 제목"),
-                                content = "해야할 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                                taskState = TaskState.TO_DO,
-                                author = authors.first(),
-                            ),
-                        ),
+            taskGroup = TaskGroup(
+                listOf(
+                    Task(
+                        title = Title("해야할 일 제목"),
+                        content = "해야할 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                        taskState = TaskState.TO_DO,
+                        author = authors.first(),
                     ),
-                    TaskState.IN_PROGRESS to TaskGroup(
-                        type = TaskState.IN_PROGRESS,
-                        tasks = listOf(
-                            Task(
-                                title = Title("진행중인 일 제목"),
-                                content = "진행중인 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
-                                taskState = TaskState.IN_PROGRESS,
-                                author = authors.first(),
-                            ),
-                        ),
+                    Task(
+                        title = Title("진행중인 일 제목"),
+                        content = "진행중인 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                        taskState = TaskState.IN_PROGRESS,
+                        author = authors.first(),
                     ),
-                    TaskState.DONE to TaskGroup(
-                        type = TaskState.DONE,
-                        tasks = listOf(
-                            Task(
-                                title = Title("끝난 일 제목"),
-                                content = "끝난 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("끝난일"))),
-                                taskState = TaskState.DONE,
-                                author = authors.last(),
-                            ),
-                        ),
+                    Task(
+                        title = Title("끝난 일 제목"),
+                        content = "끝난 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("끝난일"))),
+                        taskState = TaskState.DONE,
+                        author = authors.first(),
                     ),
                 ),
             ),
@@ -163,46 +133,33 @@ class KanbanBoardTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
             isDialogOpened = false,
-            taskTransitionSnapshot = TaskTransitionSnapshot(
-                mapOf(
-                    TaskState.TO_DO to TaskGroup(
-                        type = TaskState.TO_DO,
-                        tasks = listOf(
-                            Task(
-                                title = Title("해야할 일 제목 1"),
-                                content = "해야할 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                                taskState = TaskState.TO_DO,
-                                author = authors.first(),
-                            ),
-                            Task(
-                                title = Title("해야할 일 제목 2"),
-                                content = "해야할 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                                taskState = TaskState.TO_DO,
-                                author = authors.first(),
-                            ),
-                        ),
+            taskGroup = TaskGroup(
+                tasks = listOf(
+                    Task(
+                        title = Title("해야할 일 제목 1"),
+                        content = "해야할 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                        taskState = TaskState.TO_DO,
+                        author = authors.first(),
                     ),
-                    TaskState.IN_PROGRESS to TaskGroup(
-                        type = TaskState.IN_PROGRESS,
-                        tasks = listOf(
-                            Task(
-                                title = Title("진행중인 일 제목 1"),
-                                content = "진행중인 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
-                                taskState = TaskState.IN_PROGRESS,
-                                author = authors.first(),
-                            ),
-                        ),
+                    Task(
+                        title = Title("해야할 일 제목 2"),
+                        content = "해야할 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                        taskState = TaskState.TO_DO,
+                        author = authors.first(),
                     ),
-                    TaskState.DONE to TaskGroup(
-                        type = TaskState.DONE,
-                        tasks = emptyList(),
+                    Task(
+                        title = Title("진행중인 일 제목 1"),
+                        content = "진행중인 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                        taskState = TaskState.IN_PROGRESS,
+                        author = authors.first(),
                     ),
                 ),
             ),
         )
+
 
         setContent {
             KanbanBoardContent(kanbanBoardState = kanbanBoardState)
@@ -218,43 +175,28 @@ class KanbanBoardTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
             isDialogOpened = false,
-            taskTransitionSnapshot = TaskTransitionSnapshot(
-                mapOf(
-                    TaskState.TO_DO to TaskGroup(
-                        type = TaskState.TO_DO,
-                        tasks = listOf(
-                            Task(
-                                title = Title("해야할 일 제목 1"),
-                                content = "해야할 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                                taskState = TaskState.TO_DO,
-                                author = authors.first(),
-                            ),
-                        ),
+            taskGroup = TaskGroup(
+                listOf(
+                    Task(
+                        title = Title("해야할 일 제목 1"),
+                        content = "해야할 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                        taskState = TaskState.TO_DO,
+                        author = authors.first(),
                     ),
-                    TaskState.IN_PROGRESS to TaskGroup(
-                        type = TaskState.IN_PROGRESS,
-                        tasks = listOf(
-                            Task(
-                                title = Title("진행중인 일 제목 1"),
-                                content = "진행중인 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
-                                taskState = TaskState.IN_PROGRESS,
-                                author = authors.first(),
-                            ),
-                        ),
+                    Task(
+                        title = Title("진행중인 일 제목 1"),
+                        content = "진행중인 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("진행중인일"))),
+                        taskState = TaskState.IN_PROGRESS,
+                        author = authors.first(),
                     ),
-                    TaskState.DONE to TaskGroup(
-                        type = TaskState.DONE,
-                        tasks = listOf(
-                            Task(
-                                title = Title("다한 일"),
-                                content = "다한 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
-                                taskState = TaskState.DONE,
-                                author = authors.first(),
-                            ),
-                        ),
+                    Task(
+                        title = Title("다한 일"),
+                        content = "다한 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+                        taskState = TaskState.DONE,
+                        author = authors.first(),
                     ),
                 ),
             ),
@@ -272,35 +214,21 @@ class KanbanBoardTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(
             isDialogOpened = false,
-            taskTransitionSnapshot = TaskTransitionSnapshot(
-                mapOf(
-                    TaskState.TO_DO to TaskGroup(
-                        type = TaskState.TO_DO,
-                        tasks = listOf(
-                            Task(
-                                title = Title("해야할 일 제목 1"),
-                                content = "해야할 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
-                                taskState = TaskState.TO_DO,
-                                author = authors.first(),
-                            ),
-                        ),
+            taskGroup = TaskGroup(
+                listOf(
+                    Task(
+                        title = Title("해야할 일 제목 1"),
+                        content = "해야할 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("해야할일"))),
+                        taskState = TaskState.TO_DO,
+                        author = authors.first(),
                     ),
-                    TaskState.IN_PROGRESS to TaskGroup(
-                        type = TaskState.IN_PROGRESS,
-                        tasks = emptyList(),
-                    ),
-                    TaskState.DONE to TaskGroup(
-                        type = TaskState.DONE,
-                        tasks = listOf(
-                            Task(
-                                title = Title("다한 일"),
-                                content = "다한 일 내용",
-                                tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
-                                taskState = TaskState.DONE,
-                                author = authors.first(),
-                            ),
-                        ),
+                    Task(
+                        title = Title("다한 일"),
+                        content = "다한 일 내용",
+                        tags = TagGroup(tags = listOf(Tag("멋진"), Tag("한일"))),
+                        taskState = TaskState.DONE,
+                        author = authors.first(),
                     ),
                 ),
             ),

@@ -38,16 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import kotlin.math.round
 import kotlinx.coroutines.launch
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Progress
+import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
-import woowacourse.kanban.board.domain.TaskTransitionSnapshot
 import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 import woowacourse.kanban.board.ui.taskcard.TaskCard
+import kotlin.math.round
 
 @Composable
 fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) {
@@ -64,8 +64,7 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
                     taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
                     onClose = { kanbanBoardState.isDialogOpened = false },
                     onCreate = { task ->
-                        kanbanBoardState.taskTransitionSnapshot =
-                            kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
+                        kanbanBoardState.taskGroup = kanbanBoardState.taskGroup.add(task)
                         kanbanBoardState.isDialogOpened = false
                         scope.launch {
                             snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.", withDismissAction = true)
@@ -85,7 +84,7 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
 
 @Composable
 fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, modifier: Modifier = Modifier) {
-    val progress = kanbanBoardState.taskTransitionSnapshot.progress
+    val progress = Progress.of(kanbanBoardState.taskGroup)
     Column(modifier = modifier) {
         KanbanBoardHeader(
             isDialogOpened = { kanbanBoardState.isDialogOpened = true },
@@ -106,20 +105,21 @@ fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, modifier: Modifier = 
             drawStopIndicator = { },
         )
         Spacer(modifier = Modifier.height(20.dp))
-        SameStateTaskCardGroups(taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot)
+        SameStateTaskCardGroups(kanbanBoardState.taskGroup)
     }
 }
 
 @Composable
-private fun SameStateTaskCardGroups(taskTransitionSnapshot: TaskTransitionSnapshot, modifier: Modifier = Modifier) {
+private fun SameStateTaskCardGroups(taskGroup: TaskGroup, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier,
     ) {
         TaskState.entries.forEach { taskState ->
-            val taskGroup = taskTransitionSnapshot.getValue(taskState)
+            val taskGroup = taskGroup.getSameStateTasks(taskState = taskState)
             Column(modifier = Modifier.clip(RoundedCornerShape(10.dp)).taskCardGroupBackground(taskState)) {
                 TaskCardGroupHeader(
+                    taskState = taskState,
                     taskGroup = taskGroup,
                     modifier = Modifier.size(width = 320.dp, height = 40.dp)
                         .taskCardGroupHeaderBackground(
@@ -129,6 +129,7 @@ private fun SameStateTaskCardGroups(taskTransitionSnapshot: TaskTransitionSnapsh
                         .padding(horizontal = 16.dp),
                 )
                 TaskCardGroupContent(
+                    taskState = taskState,
                     taskGroup,
                     modifier = Modifier.size(width = 320.dp, height = 700.dp).taskCardGroupBorder(taskState)
                         .padding(vertical = 16.dp, horizontal = 16.dp),
@@ -139,8 +140,7 @@ private fun SameStateTaskCardGroups(taskTransitionSnapshot: TaskTransitionSnapsh
 }
 
 @Composable
-private fun TaskCardGroupHeader(taskGroup: TaskGroup, modifier: Modifier = Modifier) {
-    val taskState = taskGroup.type
+private fun TaskCardGroupHeader(taskState: TaskState, taskGroup: List<Task>, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -156,8 +156,7 @@ private fun TaskCardGroupHeader(taskGroup: TaskGroup, modifier: Modifier = Modif
 }
 
 @Composable
-private fun TaskCardGroupContent(taskGroup: TaskGroup, modifier: Modifier = Modifier) {
-    val taskState = taskGroup.type
+private fun TaskCardGroupContent(taskState: TaskState, taskGroup: List<Task>, modifier: Modifier = Modifier) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.semantics { contentDescription = "${taskState.toDisplayName()} 목록" },
