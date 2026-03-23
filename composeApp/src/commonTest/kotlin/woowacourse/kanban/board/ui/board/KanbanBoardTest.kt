@@ -4,6 +4,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.isDisplayed
@@ -34,17 +35,7 @@ class KanbanBoardTest {
         val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         setContent {
-            KanbanBoardContent(
-                kanbanBoardState = kanbanBoardState,
-                dialogScreen = {
-                    CreateTaskCardScreen(
-                        authors = authors,
-                        taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
-                        onClose = { kanbanBoardState.isDialogOpened = false },
-                        onCreate = { },
-                    )
-                },
-            )
+            KanbanBoardScreen(kanbanBoardState, authors)
         }
         onNodeWithContentDescription("새 태스크 생성").isDisplayed()
     }
@@ -54,17 +45,7 @@ class KanbanBoardTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         setContent {
             val kanbanBoardState = remember { KanbanBoardState(isDialogOpened = true) }
-            KanbanBoardContent(
-                kanbanBoardState = kanbanBoardState,
-                dialogScreen = {
-                    CreateTaskCardScreen(
-                        authors = authors,
-                        taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
-                        onClose = { kanbanBoardState.isDialogOpened = false },
-                        onCreate = { },
-                    )
-                },
-            )
+            KanbanBoardScreen(kanbanBoardState, authors)
         }
         onNodeWithContentDescription("x 버튼").performClick()
         onNodeWithContentDescription("새 태스크 생성").assertDoesNotExist()
@@ -75,17 +56,7 @@ class KanbanBoardTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         setContent {
             val kanbanBoardState = remember { KanbanBoardState(isDialogOpened = true) }
-            KanbanBoardContent(
-                kanbanBoardState = kanbanBoardState,
-                dialogScreen = {
-                    CreateTaskCardScreen(
-                        authors = authors,
-                        taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
-                        onClose = { kanbanBoardState.isDialogOpened = false },
-                        onCreate = { },
-                    )
-                },
-            )
+            KanbanBoardScreen(kanbanBoardState, authors)
         }
         onNodeWithContentDescription("취소 버튼").performClick()
         onNodeWithContentDescription("새 태스크 생성").assertDoesNotExist()
@@ -96,32 +67,11 @@ class KanbanBoardTest {
         val authors = AuthorGroup(authors = listOf(Author("디이노"), Author("페임스")))
         val kanbanBoardState = KanbanBoardState(isDialogOpened = true)
         setContent {
-            KanbanBoardContent(
-                kanbanBoardState = kanbanBoardState,
-                dialogScreen = {
-                    CreateTaskCardScreen(
-                        authors = authors,
-                        taskCardCreationState = TaskCardCreationState(
-                            title = "멋진 제목",
-                            content = "멋진 내용",
-                            tags = "멋진, 태그",
-                            selectedAuthor = authors.first(),
-                            isTitleInitialized = true,
-                        ),
-                        onClose = { kanbanBoardState.isDialogOpened = false },
-                        onCreate = { task ->
-                            kanbanBoardState.taskTransitionSnapshot =
-                                kanbanBoardState.taskTransitionSnapshot.transition(
-                                    task,
-                                    task.taskState,
-                                )
-                            kanbanBoardState.isDialogOpened = false
-                        },
-                    )
-                },
-            )
+            KanbanBoardScreen(kanbanBoardState, authors)
         }
+        onNodeWithText("태스크 제목을 입력하세요").performTextInput("멋진 제목")
         onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
+
         val expectedTaskTransitionSnapshot = TaskTransitionSnapshot(
             tasks = mapOf(
                 TaskState.TO_DO to TaskGroup(
@@ -129,8 +79,8 @@ class KanbanBoardTest {
                     tasks = listOf(
                         Task(
                             title = Title("멋진 제목"),
-                            content = "멋진 내용",
-                            tags = TagGroup(tags = listOf(Tag("멋진"), Tag("태그"))),
+                            content = "",
+                            tags = TagGroup(tags = emptyList()),
                             taskState = TaskState.TO_DO,
                             author = authors.first(),
                         ),
@@ -197,7 +147,7 @@ class KanbanBoardTest {
         )
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
         }
 
         onNodeWithContentDescription("To Do 목록")
@@ -255,7 +205,7 @@ class KanbanBoardTest {
         )
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
         }
 
         onNodeWithContentDescription("To Do 태스크 가드 개수").assertTextEquals("2")
@@ -311,7 +261,7 @@ class KanbanBoardTest {
         )
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
         }
 
         onNodeWithContentDescription("작업 진행률").assertTextEquals("완료율: 33% (1/3)")
@@ -357,7 +307,7 @@ class KanbanBoardTest {
         )
 
         setContent {
-            KanbanBoardContent(kanbanBoardState = kanbanBoardState, dialogScreen = { })
+            KanbanBoardContent(kanbanBoardState = kanbanBoardState)
         }
 
         onNodeWithContentDescription("작업 진행률 프로그래스바")
@@ -374,7 +324,7 @@ class KanbanBoardTest {
 
         onNodeWithText("태스크 제목을 입력하세요").performTextInput("뷁르와 함께 멋진 태스크 만들기")
         onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
-        onNodeWithText("새로운 태스크가 추가되었습니다.").isDisplayed()
+        onNodeWithText("새로운 태스크가 추가되었습니다.").assertIsDisplayed()
     }
 
     @Test

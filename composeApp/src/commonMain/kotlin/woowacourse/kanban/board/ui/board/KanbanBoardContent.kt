@@ -23,6 +23,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,17 +52,20 @@ import woowacourse.kanban.board.ui.taskcard.TaskCard
 @Composable
 fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) {
     val scope = rememberCoroutineScope()
-    val snackbarHostState = SnackbarHostState()
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { paddingValues ->
-        KanbanBoardContent(
-            kanbanBoardState = kanbanBoardState,
-            dialogScreen = {
+        if (kanbanBoardState.isDialogOpened) {
+            Dialog(
+                onDismissRequest = { kanbanBoardState.isDialogOpened = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false),
+            ) {
                 CreateTaskCardScreen(
                     authors = authors,
                     taskCardCreationState = TaskCardCreationState(selectedAuthor = authors.first()),
                     onClose = { kanbanBoardState.isDialogOpened = false },
                     onCreate = { task ->
-                        kanbanBoardState.taskTransitionSnapshot = kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
+                        kanbanBoardState.taskTransitionSnapshot =
+                            kanbanBoardState.taskTransitionSnapshot.transition(task, task.taskState)
                         kanbanBoardState.isDialogOpened = false
                         scope.launch {
                             snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.", withDismissAction = true)
@@ -69,23 +73,18 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
                     },
                     modifier = Modifier.clip(RoundedCornerShape(10.dp)),
                 )
-            },
+            }
+        }
+
+        KanbanBoardContent(
+            kanbanBoardState = kanbanBoardState,
             modifier = Modifier.padding(horizontal = 16.dp).padding(paddingValues),
         )
     }
 }
 
 @Composable
-fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, dialogScreen: @Composable () -> Unit, modifier: Modifier = Modifier) {
-    if (kanbanBoardState.isDialogOpened) {
-        Dialog(
-            onDismissRequest = { kanbanBoardState.isDialogOpened = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false),
-        ) {
-            dialogScreen()
-        }
-    }
-
+fun KanbanBoardContent(kanbanBoardState: KanbanBoardState, modifier: Modifier = Modifier) {
     val progress = kanbanBoardState.taskTransitionSnapshot.progress
     Column(modifier = modifier) {
         KanbanBoardHeader(
