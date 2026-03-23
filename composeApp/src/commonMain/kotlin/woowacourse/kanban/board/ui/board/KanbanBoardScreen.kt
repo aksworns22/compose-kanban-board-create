@@ -170,7 +170,7 @@ private fun TaskCardGroupContent(taskState: TaskState, tasks: List<Task>, modifi
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.semantics { contentDescription = "${taskState.toDisplayName()} 목록" },
     ) {
-        items(items = tasks, key = { it }) {
+        items(items = tasks, key = { it.hashCode() }) {
             TaskCard(task = it)
         }
     }
