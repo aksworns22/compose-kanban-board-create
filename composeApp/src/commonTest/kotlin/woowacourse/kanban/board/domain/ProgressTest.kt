@@ -7,7 +7,7 @@ class ProgressTest {
     @Test
     fun `작업 완료 상태와 나머지 상태를 기준으로 완료율을 계산한다`() {
         val taskGroup = TaskGroup(
-            listOf(
+            setOf(
                 Task(
                     title = Title("해야할 일 제목"),
                     content = "해야할 일 내용",
@@ -22,7 +22,7 @@ class ProgressTest {
                     taskState = TaskState.IN_PROGRESS,
                     author = Author("벨루"),
 
-                    ),
+                ),
                 Task(
                     title = Title("끝난 일 제목"),
                     content = "끝난 일 내용",

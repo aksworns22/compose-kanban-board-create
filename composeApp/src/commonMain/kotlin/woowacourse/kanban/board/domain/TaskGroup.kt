@@ -1,7 +1,6 @@
 package woowacourse.kanban.board.domain
 
 import androidx.compose.runtime.Immutable
-import java.util.function.IntFunction
 
 @Immutable
 data class TaskGroup(val tasks: Set<Task>) {

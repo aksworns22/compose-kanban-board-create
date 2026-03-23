@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
+import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
@@ -22,7 +23,6 @@ import woowacourse.kanban.board.domain.Task
 import woowacourse.kanban.board.domain.TaskGroup
 import woowacourse.kanban.board.domain.TaskState
 import woowacourse.kanban.board.domain.Title
-import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class KanbanBoardTest {
@@ -70,7 +70,7 @@ class KanbanBoardTest {
         onNodeWithContentDescription("새 태스크 생성 버튼").performClick()
 
         val expectedTaskGroup = TaskGroup(
-            tasks = listOf(
+            tasks = setOf(
                 Task(
                     title = Title("멋진 제목"),
                     content = "",
@@ -88,7 +88,7 @@ class KanbanBoardTest {
     fun `생성된 태스크를 각 태스크 상태에 맞게 표시한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val taskGroup = TaskGroup(
-            listOf(
+            setOf(
                 Task(
                     title = Title("해야할 일 제목"),
                     content = "해야할 일 내용",
@@ -129,7 +129,7 @@ class KanbanBoardTest {
     fun `각 상태에 따른 태스크 카드의 개수에 따라 올바른 숫자가 표시된다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val taskGroup = TaskGroup(
-            tasks = listOf(
+            tasks = setOf(
                 Task(
                     title = Title("해야할 일 제목 1"),
                     content = "해야할 일 내용",
@@ -167,7 +167,7 @@ class KanbanBoardTest {
     fun `완료율은 소수점 첫째자리에서 반올림한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val taskGroup = TaskGroup(
-            listOf(
+            setOf(
                 Task(
                     title = Title("해야할 일 제목 1"),
                     content = "해야할 일 내용",
@@ -203,7 +203,7 @@ class KanbanBoardTest {
     fun `계산된 완료율에 맞게 프로그래스바를 표시한다`() = runComposeUiTest {
         val authors = AuthorGroup(authors = listOf(Author("다이노"), Author("페임스")))
         val taskGroup = TaskGroup(
-            listOf(
+            setOf(
                 Task(
                     title = Title("해야할 일 제목 1"),
                     content = "해야할 일 내용",

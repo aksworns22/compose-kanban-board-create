@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlin.math.round
 import woowacourse.kanban.board.domain.Author
 import woowacourse.kanban.board.domain.AuthorGroup
 import woowacourse.kanban.board.domain.Progress
@@ -52,7 +53,6 @@ import woowacourse.kanban.board.domain.Title
 import woowacourse.kanban.board.ui.creation.CreateTaskCardScreen
 import woowacourse.kanban.board.ui.creation.TaskCardCreationState
 import woowacourse.kanban.board.ui.taskcard.TaskCard
-import kotlin.math.round
 
 @Composable
 fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) {
@@ -125,11 +125,11 @@ private fun SameStateTaskCardGroups(taskGroup: TaskGroup, modifier: Modifier = M
         modifier = modifier,
     ) {
         TaskState.entries.forEach { taskState ->
-            val taskGroup = taskGroup.getSameStateTasks(taskState = taskState)
+            val sameStateTaskGroup = taskGroup.getSameStateTasks(taskState = taskState)
             Column(modifier = Modifier.clip(RoundedCornerShape(10.dp)).taskCardGroupBackground(taskState)) {
                 TaskCardGroupHeader(
                     taskState = taskState,
-                    tasks = taskGroup,
+                    tasks = sameStateTaskGroup,
                     modifier = Modifier.size(width = 320.dp, height = 40.dp)
                         .taskCardGroupHeaderBackground(
                             taskState = taskState,
@@ -139,7 +139,7 @@ private fun SameStateTaskCardGroups(taskGroup: TaskGroup, modifier: Modifier = M
                 )
                 TaskCardGroupContent(
                     taskState = taskState,
-                    taskGroup,
+                    sameStateTaskGroup,
                     modifier = Modifier.size(width = 320.dp, height = 700.dp).taskCardGroupBorder(taskState)
                         .padding(vertical = 16.dp, horizontal = 16.dp),
                 )
@@ -170,7 +170,7 @@ private fun TaskCardGroupContent(taskState: TaskState, tasks: List<Task>, modifi
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.semantics { contentDescription = "${taskState.toDisplayName()} 목록" },
     ) {
-        items(items = tasks, key = { it } ) {
+        items(items = tasks, key = { it }) {
             TaskCard(task = it)
         }
     }
@@ -252,7 +252,7 @@ fun KanbanBoardScreenPreview() {
         isNewTaskDialogOpened = false,
         taskGroup = previewTaskGroup(),
 
-        )
+    )
 
     KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
 }
