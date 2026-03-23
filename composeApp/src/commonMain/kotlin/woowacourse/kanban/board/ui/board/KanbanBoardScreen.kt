@@ -23,8 +23,12 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,8 +60,14 @@ import kotlin.math.round
 
 @Composable
 fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) {
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(kanbanBoardState.taskGroup.size) {
+        if (kanbanBoardState.taskGroup.size > kanbanBoardState.beforeTaskGroup.size) {
+            snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.", withDismissAction = true)
+        }
+    }
+
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }) { paddingValues ->
         if (kanbanBoardState.isNewTaskDialogOpened) {
             Dialog(
@@ -71,9 +81,6 @@ fun KanbanBoardScreen(kanbanBoardState: KanbanBoardState, authors: AuthorGroup) 
                     onCreate = { task ->
                         kanbanBoardState.addNewTask(task)
                         kanbanBoardState.closeNewTaskDialog()
-                        scope.launch {
-                            snackbarHostState.showSnackbar("새로운 태스크가 추가되었습니다.", withDismissAction = true)
-                        }
                     },
                     modifier = Modifier.semantics { contentDescription = "새 태스크 생성 다이어로그" }.clip(RoundedCornerShape(10.dp)),
                 )
@@ -241,23 +248,23 @@ private fun Modifier.taskCardGroupBackground(taskState: TaskState, shape: Shape 
 
 @Preview(
     widthDp = 1280,
-    heightDp = 920
+    heightDp = 920,
 )
 @Composable
 fun KanbanBoardScreenPreview() {
     val authors = previewAuthors()
     val kanbanBoardState = KanbanBoardState(
         isNewTaskDialogOpened = false,
-        taskGroup = previewTaskGroup()
+        taskGroup = previewTaskGroup(),
 
-    )
+        )
 
     KanbanBoardScreen(kanbanBoardState = kanbanBoardState, authors = authors)
 }
 
 @Preview(
     widthDp = 1280,
-    heightDp = 920
+    heightDp = 920,
 )
 @Composable
 private fun KanbanBoardScreenWithDialogPreview() {
@@ -273,7 +280,7 @@ private fun KanbanBoardScreenWithDialogPreview() {
 @Preview(
     widthDp = 1280,
     heightDp = 920,
-    showBackground = true
+    showBackground = true,
 )
 @Composable
 private fun SameStateTaskCardGroupsPreview() {
